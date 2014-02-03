@@ -1,0 +1,69 @@
+#VRML V2.0 utf8
+
+#Created with V-Realm Builder v2.0
+#Integrated Data Systems Inc.
+#www.ids-net.com
+
+
+SpotLight {
+	location	0 30 0
+}
+Background {
+	groundAngle	[ 0.9, 1.5, 1.57 ]
+	groundColor	[ 0 0.8 0,
+			  0.174249 0.82 0.187362,
+			  0.467223 0.82 0.445801,
+			  0.621997 0.67 0.600279 ]
+	skyAngle	[ 0.1, 1.2, 1.57 ]
+	skyColor	[ 0.76238 0.8 0.1427,
+			  0.277798 0.219779 0.7,
+			  0.222549 0.390234 0.7,
+			  0.60094 0.662637 0.69 ]
+}
+Viewpoint {
+	position	0 10 40
+	description	"My_View"
+}
+DEF Ball Transform {
+	translation	0 7.78153 0
+	scale	1.5 1.5 1.5
+	children Shape {
+		appearance	Appearance {
+			material	Material {
+				diffuseColor	0.8 0.471841 0.503074
+				emissiveColor	0.35 0.237062 0.271762
+				specularColor	0.45 0.282414 0.308843
+			}
+
+		}
+
+		geometry	Sphere {
+			radius	1.5
+		}
+
+	}
+}
+Transform {
+	translation	0 -0.1 0
+	children Shape {
+		appearance	Appearance {
+			material	Material {
+			}
+
+			texture	ImageTexture {
+				url	"texture/Brick_2.jpg"
+			}
+
+		}
+
+		geometry	Box {
+			size	20 0.1 20
+		}
+
+	}
+}
+DEF Top_View Viewpoint {
+	orientation	-1 0 0  0.753982
+	position	0 34.6716 22.3133
+	description	"Top_View"
+}
