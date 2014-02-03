@@ -80,6 +80,7 @@ set(handles.previous_button,'Visible','Off');
 set(handles.next_button,'Visible','Off');
 set(handles.curve_list,'Visible','Off');
 set(handles.curve_info,'Visible','Off');
+set(handles.curve_parameters,'Visible','Off');
 set(handles.axes_force_time,'Visible','Off');
 set(handles.axes_force_distance,'Visible','Off');
 set(handles.adhesion_panel,'Visible','off');
