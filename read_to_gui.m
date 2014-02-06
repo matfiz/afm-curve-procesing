@@ -1,5 +1,6 @@
 function read_to_gui(hObject,handles,curve_index)
     plot_curve(hObject,handles);
+
     %read adhesion steps
     [w k] = size(handles.current_curve.dataSteps);
     if k>5
@@ -19,7 +20,7 @@ function read_to_gui(hObject,handles,curve_index)
         set(handles.adhesion_table,'Data',[]);
     end
     %stress relaxation fit
-    if handles.curves(curve_index).mode == 'constant-height'
+    %if handles.curves(curve_index).mode == 'constant-height'
         if handles.current_curve.hasStressRelaxation == true
             fit_stress_relaxation(hObject,handles,curve_index); 
             set(handles.checkbox_relaxation,'Value',1);
@@ -33,6 +34,6 @@ function read_to_gui(hObject,handles,curve_index)
             set(handles.table_relaxation,'Visible','off');
             set(handles.slider_relaxation,'Visible','off');
         end
-    end
+    %end
     guidata(hObject, handles);
 end

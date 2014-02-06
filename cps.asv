@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 03-Feb-2014 13:00:55
+% Last Modified by GUIDE v2.5 04-Feb-2014 16:15:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,7 +80,6 @@ set(handles.previous_button,'Visible','Off');
 set(handles.next_button,'Visible','Off');
 set(handles.curve_list,'Visible','Off');
 set(handles.curve_info,'Visible','Off');
-set(handles.curve_parameters,'Visible','Off');
 set(handles.axes_force_time,'Visible','Off');
 set(handles.axes_force_distance,'Visible','Off');
 set(handles.adhesion_panel,'Visible','off');
@@ -144,31 +143,26 @@ if  ~handles.save
     if strcmp(button,'Yes')
         [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file');
         krzywe=handles.curves;
-        save([pathname filename],'krzywe');
+        save(fullfile(pathname,filename),'krzywe');
         handles.save=1;    
     end        
     if strcmp(button,'Cancel')
          return;
     end
 end
-[FileName1,PathName] = uigetfile('*.*','Choose curve to open');
- h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
-     if (FileName1)
-        curve_info = ['Single curve loaded: ' FileName1];
-        set(handles.curve_info,'String',curve_info);
-        set(handles.curve_info,'Visible','On');
-        handles.current_curve_index = 1;
-        handles.curves(1) = parse_curve(PathName,FileName1);
-        handles.current_curve = handles.curves(handles.current_curve_index);
-        read_to_gui(hObject,handles,1);
-     end
-     set(handles.curve_parameters,'Visible','On');
-    set(handles.axes_force_time,'Visible','On');
-    set(handles.axes_force_distance,'Visible','On');
+[FileName1,PathName,FilterIndex] = uigetfile(OpenFileFilter,'Choose curve to open');
+if (FileName1)
+    h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
+    curve_info = ['Single curve loaded: ' FileName1];
+    set(handles.curve_info,'String',curve_info);
+    set(handles.curve_info,'Visible','On');
+    handles.current_curve_index = 1;
+    handles.curves(1) = parse_curve(PathName,FileName1,FilterIndex);
+    handles.current_curve = handles.curves(handles.current_curve_index);
+    read_to_gui(hObject,handles,1);
     handles.no_of_curves = 1;
- close(h);
- %stress relaxation
-
+    close(h);
+end
 guidata(hObject, handles);
 
 
@@ -189,16 +183,23 @@ if  ~handles.save
          return;
     end
 end
-PathName = uigetdir(handles.current_dir,'Choose dir to open');
+[PathName] = uigetdir(handles.current_dir,'Choose dir to open');
 handles.current_dir = PathName;
+list = OpenFileFilter;
+[selection,button] = listdlg('PromptString','Select files type:',...
+                'Name','File type selection',...
+                'SelectionMode','single',...
+                'ListSize',[250 100],...
+                'ListString',list(:,2));
+FilterIndex = selection;
 %read all txt files
-files = dir(fullfile(PathName,'*.txt'));
+files = dir(fullfile(PathName,OpenFileFilter(FilterIndex)));
 handles.no_of_curves = size(files);
 handles.no_of_curves = handles.no_of_curves(1);
  h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
   for i=1:handles.no_of_curves
       disp(['\' files(i).name]);
-      handles.curves(i) = parse_curve(PathName,['\' files(i).name]);
+      handles.curves(i) = parse_curve(PathName,['\' files(i).name],FilterIndex);
       waitbar(i/handles.no_of_curves);
       file_names{i} = files(i).name;
   end
@@ -210,10 +211,6 @@ handles.no_of_curves = handles.no_of_curves(1);
  set(handles.previous_button,'Visible','On');
 set(handles.next_button,'Visible','On');
 set(handles.curve_list,'Visible','On');
-set(handles.curve_parameters,'Visible','Off');
-set(handles.curve_parameters,'Visible','On');
-set(handles.axes_force_time,'Visible','On');
-set(handles.axes_force_distance,'Visible','On'); 
  close(h);
 guidata(hObject, handles);
 
@@ -679,15 +676,26 @@ curve_info = ['Single curve loaded: jpk.txt'];
 set(handles.curve_info,'String',curve_info);
 set(handles.curve_info,'Visible','On');
 handles.current_curve_index = 1;
-handles.curves(1) = parse_curve('./','jpk.txt');
+handles.curves(1) = parse_curve('./test_data/','jpk.txt',1);
 handles.current_curve = handles.curves(handles.current_curve_index);
 read_to_gui(hObject,handles,1);
-set(handles.curve_parameters,'Visible','On');
-set(handles.axes_force_time,'Visible','On');
-set(handles.axes_force_distance,'Visible','On');
 handles.no_of_curves = 1;
 guidata(hObject, handles);
 
+% --------------------------------------------------------------------
+function load_test_data_di_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to load_test_data_di (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+curve_info = ['Single curve loaded: komorka00000.021'];
+set(handles.curve_info,'String',curve_info);
+set(handles.curve_info,'Visible','On');
+handles.current_curve_index = 1;
+handles.curves(1) = parse_curve('./test_data/','komorka00000.021',2);
+handles.current_curve = handles.curves(handles.current_curve_index);
+read_to_gui(hObject,handles,1);
+handles.no_of_curves = 1;
+guidata(hObject, handles);
 
 % --- Executes on button press in checkbox_relaxation.
 function checkbox_relaxation_Callback(hObject, eventdata, handles)
@@ -813,3 +821,20 @@ end
 function cps_CloseRequestFcn(hObject, eventdata, handles)
 delete(handles.curveParameters );
 delete(hObject);
+
+
+% --------------------------------------------------------------------
+function toggle_stiffness_panel_OnCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_stiffness_panel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%call curve_parameters
+handles.stifnessPanel = cps_curve_parameters('cps',hObject);
+
+
+% --------------------------------------------------------------------
+function toggle_stiffness_panel_OffCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_stiffness_panel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+delete(handles.curveParameters );

@@ -1,0 +1,16 @@
+function fileFilter = OpenFileFilter(row) 
+if (~exist('row', 'var'))
+        row = 0;
+end
+if (row == 0)
+    fileFilter = {...
+       '*.txt',  'JPK converted curves (*.txt)'; ...
+       '*0*.0*','Multimode 6 (eg. komorka00014.002)'; ...
+       %'*.m;*.fig;*.mat;*.slx;*.mdl','MATLAB Files (*.m,*.fig,*.mat,*.slx,*.mdl)'; ...
+       %'*.*',  'All Files (*.*)';...
+       };
+else
+    filter_list = OpenFileFilter;
+    filter_line = filter_list(row,1);
+    fileFilter = filter_line{1};
+end

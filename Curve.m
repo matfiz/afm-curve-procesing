@@ -44,6 +44,8 @@ classdef Curve
         hasStressRelaxation = true
         StressRelaxationFitLength
         dataStressRelaxation
+        hasStiffnessFit = false
+        stiffnessParams
     end
     
     methods 
