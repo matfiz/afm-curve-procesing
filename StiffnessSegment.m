@@ -1,14 +1,5 @@
-classdef StifnessSegment
-%properties:
-%   params
-%       xStartPos
-%       yStartPos
-%       xEndPos
-%       yEndPos
-%       slope
-%       freeCoef
-%       correlation
-    
+classdef StiffnessSegment
+   
     properties
        xStartPos
        yStartPos
@@ -21,7 +12,7 @@ classdef StifnessSegment
     
     methods 
         function data = xLength(obj)
-         data = abs(xStartPos-xEndPos)
+         data = abs(obj.xStartPos-obj.xEndPos);
         end % xLength
        
         

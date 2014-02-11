@@ -272,9 +272,9 @@ if ~isempty(initialState.toolbar)
 end
 
 % Setup FullCrosshair Pointer without warning. 
-% oldwarnstate = warning('off', 'MATLAB:hg:Figure:Pointer');
-% set(fig,'Pointer','crosshair')
-% warning(oldwarnstate);
+%oldwarnstate = warning('off', 'MATLAB:hg:Figure:Pointer');
+%set(fig,'Pointer','crosshair')
+%warning(oldwarnstate);
 
 % Adding this to enable automatic updating of currentpoint on the figure 
 set(fig,'WindowButtonMotionFcn',@(o,e) dummy(fig,ax));
@@ -312,7 +312,7 @@ for i=1:length(ax)
     pos = get(0,'PointerLocation');
     if  pos(1)>posax(1)+posfig(1) && pos(1)<posax(1)+posax(3)+posfig(1) ...
      && pos(2)>posax(2)+posfig(2) && pos(2)<posax(2)+posax(4)+posfig(2)
-        set(fig,'Pointer','crosshair')
+        set(fig,'Pointer','crosshair') %fullcrosshair
     end
 end
 

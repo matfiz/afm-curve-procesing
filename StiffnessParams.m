@@ -4,7 +4,7 @@ classdef StiffnessParams
        numberOfSegments
        xContactPoint
        yContactPoint
-       stifnessSegments       
+       stiffnessSegments       
        dataForce
        dataIndentation
     end

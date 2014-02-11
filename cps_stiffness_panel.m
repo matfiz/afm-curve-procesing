@@ -22,7 +22,7 @@ function varargout = cps_stiffness_panel(varargin)
 
 % Edit the above text to modify the response to help cps_stiffness_panel
 
-% Last Modified by GUIDE v2.5 04-Feb-2014 16:51:21
+% Last Modified by GUIDE v2.5 10-Feb-2014 12:43:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,11 +68,26 @@ end
 handles.setContactPoint = @setContactPoint;
 handles.calculateForceIndentation = @calculateForceIndentation;
 
-%style axes
-xlabel(handles.axes_force_indentation,'Indentation [m]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
-ylabel(handles.axes_force_indentation,'Force [N]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
-title(handles.axes_force_indentation, ['Force-indentation for curve ' cps_handles.current_curve.name],'interpreter','none');
-    
+%Create labels in stiffness panel
+handles.l_stiffness = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String','Stiffness [N/m]',...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[20 185 90 15]);
+handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String','Length [nm]',...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[110 185 70 15]);
+handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String','R^2',...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[180 185 100 15]);
+
 
 % Update handles structure
 guidata(hObject, handles);
@@ -109,11 +124,17 @@ function calculateForceIndentation(hObject)
     for i=1:length(curve.stiffnessParams.dataForce),
       curve.stiffnessParams.dataIndentation(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - (curve.stiffnessParams.dataForce(i) - refB)/refSlope;    
     end
+    curve.stiffnessParams.dataIndentation = curve.stiffnessParams.dataIndentation';
     %curve.stiffnessParams.dataIndentation = curve.dataHeightMeasured(xContactPointIndex:curve.extendLength);
     %plot FD curve in StiffnessFitPanel
     forceIndentationData = curve.stiffnessParams.force_indentation;
-    indentation_plot = plot(handles.axes_force_indentation,...
-                        forceIndentationData(1,:),forceIndentationData(2,:));
+    indentation_plot = scatter(handles.axes_force_indentation,...
+                        forceIndentationData(1,:),forceIndentationData(2,:),...
+                        10,[1 0 1],'o','fill');
+    %style plot                
+    xlabel(handles.axes_force_indentation,'Indentation [m]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
+    ylabel(handles.axes_force_indentation,'Force [N]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
+    title(handles.axes_force_indentation, ['Force-indentation for curve ' cps_handles.current_curve.name],'interpreter','none');
     %save variables
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
@@ -144,3 +165,217 @@ cps_handles = guidata(handles.cps);
 axes(cps_handles.axes_force_distance);
 vertical_cursors(hObject,cps_handles.axes_force_distance);
 guidata(hObject, handles);
+
+
+% --- Executes on button press in b_add_segment.
+function b_add_segment_Callback(hObject, eventdata, handles, segmentNumber)
+% hObject    handle to b_add_segment (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    
+    %check segment number
+    if (~exist('segmentNumber', 'var'))
+        segmentNumber = curve.stiffnessParams.numberOfSegments;
+        %increment number of segments
+        if curve.stiffnessParams.numberOfSegments > 0
+           curve.stiffnessParams.numberOfSegments = curve.stiffnessParams.numberOfSegments + 1;
+        else
+           curve.stiffnessParams.numberOfSegments = 1;
+        end
+        segmentNumber = curve.stiffnessParams.numberOfSegments;
+    end
+    
+    
+    
+    
+    %Add Segment To Curve instance
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = StiffnessSegment;
+    current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
+    current_segment.slope = 0;
+   
+    %save variables
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    selectPoints(hObject,segmentNumber);
+    
+function selectPoints(hObject,segment_number)
+    segmentNumber = segment_number;
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
+    %select_points
+    set(handles.status_bar,'String','Left click on the first point of the slope, right click on the end point.')
+    set(handles.status_bar,'Visible','On');
+    but = 1;
+    axes(handles.axes_force_indentation);
+    hold on;
+    %wait for left, then right mouse button press
+    while but == 1
+        [x,y,but] = ginputax(handles.axes_force_indentation,1);
+        if but == 1
+            Min = findClosestPoint(x,y,curve.stiffnessParams.dataIndentation,curve.stiffnessParams.dataForce);
+            current_segment.xStartPos = Min(1);
+            current_segment.yStartPos = Min(2);
+        end
+    end
+    Min = findClosestPoint(x,y,curve.stiffnessParams.dataIndentation,curve.stiffnessParams.dataForce);
+    current_segment.xEndPos = Min(1);
+    current_segment.yEndPos = Min(2);
+    set(handles.status_bar,'Visible','Off');
+    %fit line
+    indexStart = find(curve.stiffnessParams.dataIndentation == current_segment.xStartPos);
+    indexEnd = find(curve.stiffnessParams.dataIndentation == current_segment.xEndPos);
+    %forceIndentationData = curve.stiffnessParams.force_indentation;
+    yData = curve.stiffnessParams.dataForce(indexStart:indexEnd);
+    xData = curve.stiffnessParams.dataIndentation(indexStart:indexEnd);
+    [p,S] = polyfit(xData,yData,1);
+    current_segment.slope = p(1);
+    current_segment.freeCoef = p(2);
+    current_segment.correlation = 0.98;
+    %save variables
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    %plot
+    plotSegment(hObject,segmentNumber);
+    displaySegmentParams(hObject,segmentNumber);
+        
+function Min = findClosestPoint(x,y,xData,yData)
+    [a,index]=min((xData-x).^2+(yData-y).^2);
+    Min = [xData(index(1)),yData(index(1)),index(1)];
+    
+function displaySegmentParams(hObject,segmentNumber)
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
+    
+    %create buttons&labels
+    handles.stiffnessControl_lStiffness{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String',current_segment.slope,...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[30 200-50*segmentNumber 80 15]);
+    handles.stiffnessControl_lLength{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String',current_segment.xLength,...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[110 200-50*segmentNumber 80 15]);
+    handles.stiffnessControl_lCorr{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','text',...
+                'String',current_segment.correlation,...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[190 200-50*segmentNumber 70 15]);
+    handles.stiffnessControl_bRemove{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','pushbutton',...
+                'String','Remove',...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[260 200-50*segmentNumber 70 30],...
+                'Backgroundcolor', [1 0 0],...
+                'Callback', {@removeSegment,segmentNumber,hObject});
+    %remove add segment button, if exists
+    try
+        delete(handles.stiffnessControl_bAdd{segmentNumber});
+    catch err
+    end
+    
+    %save variables
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    
+function removeSegment(hObj,event,segmentNumber,hObject)
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
+    
+    %get objects and delete them
+    lStiffness = handles.stiffnessControl_lStiffness{segmentNumber};
+    lLength = handles.stiffnessControl_lLength{segmentNumber};
+    lCorr = handles.stiffnessControl_lCorr{segmentNumber};
+    bRemove = handles.stiffnessControl_bRemove{segmentNumber};
+    gPoints = handles.graph_points{segmentNumber};
+    gLine = handles.graph_segments{segmentNumber};
+    delete(lStiffness);
+    delete(lLength);
+    delete(lCorr);
+    delete(bRemove);
+    delete(gPoints);
+    delete(gLine);
+    
+    %if segment number is equal to total numbers of segments, then
+    %decrement it
+    if segmentNumber == curve.stiffnessParams.numberOfSegments
+        curve.stiffnessParams.numberOfSegments = curve.stiffnessParams.numberOfSegments - 1;
+    end
+    
+    %add button to create segment
+    handles.stiffnessControl_bAdd{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
+                'Style','pushbutton',...
+                'String','Add',...
+                'FontSize',8,...
+                'FontWeight','bold',...
+                'Position',[260 200-50*segmentNumber 60 30],...
+                'Backgroundcolor', [0 1 0],...
+                'Callback', {@addSegment,segmentNumber,hObject});
+    
+    %save variables
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    
+function addSegment(hObj,event,segmentNumber,hObject)
+    %read variables
+    handles = guidata(hObject);
+    b_add_segment_Callback(hObject, event, handles, segmentNumber)
+    
+function plotSegment(hObject,segmentNumber)
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
+    
+    %draw points
+    points = plot(current_segment.xStartPos,current_segment.yStartPos,'gx',...
+            current_segment.xEndPos,current_segment.yEndPos,'gx',...
+            'MarkerSize',13,...
+            'LineWidth',2);
+    handles.graph_points{segmentNumber} = points;
+    
+    %select fragment
+    indexStart = find(curve.stiffnessParams.dataIndentation == current_segment.xStartPos);
+    indexEnd = find(curve.stiffnessParams.dataIndentation == current_segment.xEndPos);
+    
+    %select Data
+    yData = curve.stiffnessParams.dataForce(indexStart:indexEnd);
+    xData = curve.stiffnessParams.dataIndentation(indexStart:indexEnd);
+    yFit = current_segment.slope*xData+current_segment.freeCoef;
+    segment = plot(handles.axes_force_indentation,xData(:),yFit(:),...
+        'LineWidth',2);
+    handles.graph_segments{segmentNumber} = segment;
+    
+    %save variables
+    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+        

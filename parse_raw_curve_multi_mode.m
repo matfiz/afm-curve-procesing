@@ -20,8 +20,8 @@ curve = Curve; %initiate Curve object from class
 try
     if di_version(fullfile(pathname,fname)) == 6
         Output_array = di_open_fd(fullfile(pathname,fname));
-        curve.dataHeight = [Output_array(:,1);Output_array(:,2)];
-        curve.dataHeightMeasured = [Output_array(:,1);Output_array(:,2)];
+        curve.dataHeight = [Output_array(:,1);Output_array(:,2)]*10^(-9);
+        curve.dataHeightMeasured = [Output_array(:,1);Output_array(:,2)]*10^(-9);
         curve.dataDeflection = [Output_array(:,3);Output_array(:,4)]*10^(-9);
         curve.name = fname;     
 
