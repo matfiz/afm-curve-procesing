@@ -153,6 +153,7 @@ end
 [FileName1,PathName,FilterIndex] = uigetfile(OpenFileFilter,'Choose curve to open');
 if (FileName1)
     h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
+    handles.current_dir = PathName;
     curve_info = ['Single curve loaded: ' FileName1];
     set(handles.curve_info,'String',curve_info);
     set(handles.curve_info,'Visible','On');
@@ -692,6 +693,7 @@ set(handles.curve_info,'String',curve_info);
 set(handles.curve_info,'Visible','On');
 handles.current_curve_index = 1;
 handles.curves(1) = parse_curve('./test_data/','komorka00000.021',2);
+handles.current_dir = [pwd '/test_data/'];
 handles.current_curve = handles.curves(handles.current_curve_index);
 read_to_gui(hObject,handles,1);
 handles.no_of_curves = 1;
@@ -825,6 +827,11 @@ try
 catch
  disp('Stiffness panel inactive');
 end
+try
+ delete(handles.fileOutput);
+catch
+ disp('File output panel inactive');
+end
 delete(hObject);
 
 
@@ -834,6 +841,7 @@ function toggle_stiffness_panel_OnCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %call curve_parameters
+handles.fileOutput = cps_write_to_file('cps',hObject);
 handles.stiffnessPanel = cps_stiffness_panel('cps',hObject);
 guidata(hObject, handles);
 
@@ -844,4 +852,5 @@ function toggle_stiffness_panel_OffCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.stiffnessPanel);
+delete(handles.fileOutput);
 guidata(hObject, handles);

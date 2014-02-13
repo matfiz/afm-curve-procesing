@@ -96,9 +96,12 @@ guidata(hObject, handles);
 try
     calculateForceIndentation(hObject);
     if cps_handles.current_curve.stiffnessParams.numberOfSegments > 0
-        for i=1:curve.stiffnessParams.numberOfSegments,
-            displaySegmentParams(hObject,i);
-            plotSegment(hObject,i);
+        for j=1:cps_handles.current_curve.stiffnessParams.numberOfSegments,
+            try
+                displaySegmentParams(hObject,j);
+                plotSegment(hObject,j);
+            catch
+            end
         end
     end
 catch err
@@ -146,6 +149,7 @@ function calculateForceIndentation(hObject)
     indentation_plot = scatter(handles.axes_force_indentation,...
                         forceIndentationData(1,:),forceIndentationData(2,:),...
                         10,[1 0 1],'o','fill');
+    hold on;
     %style plot                
     xlabel(handles.axes_force_indentation,'Indentation [m]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
     ylabel(handles.axes_force_indentation,'Force [N]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
@@ -416,6 +420,11 @@ function b_write_to_file_Callback(hObject, eventdata, handles)
 % hObject    handle to b_write_to_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    fileOutput_handles = guidata(cps_handles.fileOutput);
+    fileOutput_handles.write_stiffness(cps_handles.fileOutput);
 
 
 % --- Executes during object creation, after setting all properties.

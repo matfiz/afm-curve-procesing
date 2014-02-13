@@ -1,0 +1,6 @@
+Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]komorka00000.021	-0.356872	-1.009929	0.000000	0.111010	0.172770	0.000000	Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]
+komorka00000.021	-0.356872	-1.009929	0.000000	0.111010	0.172770	0.000000
+Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]
+komorka00000.021	-0.356872	-1.009929	0.000000	0.111010	0.172770	0.000000
+Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]
+komorka00000.021	-0.356872	-1.009929	0.000000	0.111010	0.172770	0.000000
