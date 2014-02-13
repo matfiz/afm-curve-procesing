@@ -22,7 +22,7 @@ function varargout = cps_stiffness_panel(varargin)
 
 % Edit the above text to modify the response to help cps_stiffness_panel
 
-% Last Modified by GUIDE v2.5 10-Feb-2014 12:43:04
+% Last Modified by GUIDE v2.5 12-Feb-2014 16:03:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,7 +71,7 @@ handles.calculateForceIndentation = @calculateForceIndentation;
 %Create labels in stiffness panel
 handles.l_stiffness = uicontrol('Parent',handles.panel_stiffness_segments,...
                 'Style','text',...
-                'String','Stiffness [N/m]',...
+                'String','Stiffness [pN/nm]',...
                 'FontSize',8,...
                 'FontWeight','bold',...
                 'Position',[20 185 90 15]);
@@ -89,21 +89,36 @@ handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
                 'Position',[180 185 100 15]);
 
 
+
 % Update handles structure
 guidata(hObject, handles);
+%draw force-indentation and segments if already analysed
+try
+    calculateForceIndentation(hObject);
+    if cps_handles.current_curve.stiffnessParams.numberOfSegments > 0
+        for i=1:curve.stiffnessParams.numberOfSegments,
+            displaySegmentParams(hObject,i);
+            plotSegment(hObject,i);
+        end
+    end
+catch err
+end
 
 % UIWAIT makes cps_stiffness_panel wait for user response (see UIRESUME)
 % uiwait(handles.cps_stiffness_panel);
 
 function setContactPoint(hObject, contactPoint)
+    %read
     handles = guidata(hObject);
     cps_handles = guidata(handles.cps);
     curve = cps_handles.current_curve;
+    %set
     curve.hasStiffnessFit = true;
     params = StiffnessParams;
     curve.stiffnessParams = params;
     curve.stiffnessParams.xContactPoint = contactPoint(1);
     curve.stiffnessParams.yContactPoint = contactPoint(2);
+    %save
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
@@ -237,9 +252,19 @@ function selectPoints(hObject,segment_number)
     yData = curve.stiffnessParams.dataForce(indexStart:indexEnd);
     xData = curve.stiffnessParams.dataIndentation(indexStart:indexEnd);
     [p,S] = polyfit(xData,yData,1);
+    %calculate R^2 (Pearson correlation)
+    %yResidual = yData - polyval(p,xData);
+    SSxx=sum((xData-mean(xData)).^2);
+    SSyy=sum((yData-mean(yData)).^2);
+    SSxy=sum((xData-mean(xData)).*(yData-mean(yData)));
+    yResidual = yData - p(1)*xData-p(2);
+    SSresid = sum(yResidual.^2)*10^6;
+    SStotal = (length(yData)-1)*var(yData)*10^6;
+    %resq = 1 - SSresid/SStotal;
+    resq = SSxy^2/(SSxx*SSyy);
     current_segment.slope = p(1);
     current_segment.freeCoef = p(2);
-    current_segment.correlation = 0.98;
+    current_segment.correlation = resq;
     %save variables
     curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
     cps_handles.current_curve = curve;
@@ -263,13 +288,13 @@ function displaySegmentParams(hObject,segmentNumber)
     %create buttons&labels
     handles.stiffnessControl_lStiffness{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
                 'Style','text',...
-                'String',current_segment.slope,...
+                'String',current_segment.slope*10^3*(-1),...
                 'FontSize',8,...
                 'FontWeight','bold',...
                 'Position',[30 200-50*segmentNumber 80 15]);
     handles.stiffnessControl_lLength{segmentNumber} = uicontrol('Parent',handles.panel_stiffness_segments,...
                 'Style','text',...
-                'String',current_segment.xLength,...
+                'String',current_segment.xLength*10^9,...
                 'FontSize',8,...
                 'FontWeight','bold',...
                 'Position',[110 200-50*segmentNumber 80 15]);
@@ -313,12 +338,14 @@ function removeSegment(hObj,event,segmentNumber,hObject)
     bRemove = handles.stiffnessControl_bRemove{segmentNumber};
     gPoints = handles.graph_points{segmentNumber};
     gLine = handles.graph_segments{segmentNumber};
+    gThinLine = handles.graph_segment_lines{segmentNumber};
     delete(lStiffness);
     delete(lLength);
     delete(lCorr);
     delete(bRemove);
     delete(gPoints);
     delete(gLine);
+    delete(gThinLine);
     
     %if segment number is equal to total numbers of segments, then
     %decrement it
@@ -366,12 +393,15 @@ function plotSegment(hObject,segmentNumber)
     indexEnd = find(curve.stiffnessParams.dataIndentation == current_segment.xEndPos);
     
     %select Data
-    yData = curve.stiffnessParams.dataForce(indexStart:indexEnd);
-    xData = curve.stiffnessParams.dataIndentation(indexStart:indexEnd);
+    yData = curve.stiffnessParams.dataForce;
+    xData = curve.stiffnessParams.dataIndentation;
     yFit = current_segment.slope*xData+current_segment.freeCoef;
-    segment = plot(handles.axes_force_indentation,xData(:),yFit(:),...
+    segment = plot(handles.axes_force_indentation,xData(indexStart:indexEnd),yFit(indexStart:indexEnd),...
         'LineWidth',2);
+    line = plot(handles.axes_force_indentation,xData(indexStart:end),yFit(indexStart:end),...
+        'LineWidth',0.5);
     handles.graph_segments{segmentNumber} = segment;
+    handles.graph_segment_lines{segmentNumber} = line;
     
     %save variables
     curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
@@ -379,3 +409,20 @@ function plotSegment(hObject,segmentNumber)
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
         
+
+
+% --- Executes on button press in b_write_to_file.
+function b_write_to_file_Callback(hObject, eventdata, handles)
+% hObject    handle to b_write_to_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes during object creation, after setting all properties.
+function b_write_to_file_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to b_write_to_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+[x,map]=imread('lib/pencil_40.png');
+%I2=imresize(x, [120 72]);
+set(hObject,'cdata',x);
