@@ -1,6 +1,5 @@
 function vertical_cursors(hObject,axes)
 handles = guidata(hObject);
-cps_handles = guidata(handles.cps);
 
 set(gcf, ...
    'WindowButtonDownFcn', @clickFcn, ...
@@ -46,13 +45,19 @@ slopeCur(1) = line([NaN NaN], ylim(axes), ...
         set(hCur, 'XData', [pt(1), pt(1)]);
         %update slope line pos
         yRange = get(hCur,'YData')
+        %updata data
+        cps_handles = guidata(handles.cps);
+        curve = cps_handles.current_curve;
+        approach=curve.force_distance_approach;
+        xdata = approach(1,:);
+        ydata = approach(2,:);
+        %slope = cps_handles.current_curve.sensitivity*cps_handles.current_curve.springConstant*(-1)*64*2.5*10^(-4);
+        slope = cps_handles.current_curve.scalingFactor*(-1);
         %hold off;
         % Update cursor text
-        for idx = 2:2%length(allLines)
-           xdata = get(allLines(idx), 'XData');
-           ydata = get(allLines(idx), 'YData');
+        %for idx = 1:length(allLines)
            
-           if pt(1) >= xdata(1) && pt(1) <= xdata(end)
+           if pt(1) >= xdata(end) && pt(1) <= xdata(1)
               y = interp1(xdata, ydata, pt(1));
            %   set(hText(idx), 'Position', [pt(1), y], ...
            %      'String', sprintf('(%0.2f, %0.2f)', pt(1), y));
@@ -60,15 +65,14 @@ slopeCur(1) = line([NaN NaN], ylim(axes), ...
              [c index] = min(abs(xdata-pt(1)));
                handles.setContactPoint(hObject, [xdata(index),ydata(index)]);
                %draw the slope on graph
-               slope = cps_handles.current_curve.sensitivity*cps_handles.current_curve.springConstant*(-1)*64*2.5*10^(-4);
                 b = ydata(index)-slope*xdata(index);
-                xMin = (yRange(1)-b)/slope
-                xMax = (yRange(2)-b)/slope
+                xMin = (yRange(1)-b)/slope;
+                xMax = (yRange(2)-b)/slope;
                 set(slopeCur, 'XData', [xMin, xMax]);
            else
-              set(hText(idx), 'Position', [NaN NaN]);
+              %set(hText(idx), 'Position', [NaN NaN]);
            end
-        end
+        %end
      end
      function unclickFcn(varargin)
         set(gcf, 'WindowButtonMotionFcn', '');

@@ -38,6 +38,7 @@ classdef Curve
         dataHeightMeasured
         dataSeriesTime
         dataSegmentTime
+        scalingFactor
         fancyNames
         units
         dataSteps
