@@ -265,6 +265,8 @@ function previous_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if handles.current_curve_index > 1
+     handles.curves(handles.current_curve_index) = handles.current_curve;
+     disp(handles.current_curve);
      handles.current_curve_index = handles.current_curve_index-1;
      handles.current_curve = handles.curves(handles.current_curve_index);
      set(handles.curve_list,'Value',handles.current_curve_index);
@@ -280,6 +282,9 @@ function next_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if handles.current_curve_index < handles.no_of_curves
+     handles.curves(handles.current_curve_index) = handles.current_curve;
+     guidata(hObject, handles);
+     disp(handles.current_curve);
      handles.current_curve_index = handles.current_curve_index+1;
      handles.current_curve = handles.curves(handles.current_curve_index);
      set(handles.curve_list,'Value',handles.current_curve_index);
@@ -540,16 +545,16 @@ function toolbar_toggle_curve_parameters_OnCallback(hObject, eventdata, handles)
 % hObject    handle to toolbar_toggle_curve_parameters (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.curve_parameters,'Visible','on');
-
+handles.curveParameters = cps_curve_parameters('cps',hObject);
+guidata(hObject, handles);
 
 % --------------------------------------------------------------------
 function toolbar_toggle_curve_parameters_OffCallback(hObject, eventdata, handles)
 % hObject    handle to toolbar_toggle_curve_parameters (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.curve_parameters,'Visible','off');
-
+delete(handles.curveParameters);
+guidata(hObject, handles);
 
 % --- Executes on button press in b_get_step.
 function b_get_step_Callback(hObject, eventdata, handles)
@@ -641,9 +646,13 @@ handles.current_curve_index = 1;
 handles.current_curve = handles.curves(handles.current_curve_index);
 handles.current_steps = handles.current_curve.dataSteps;
 read_to_gui(hObject,handles,1);
-set(handles.curve_parameters,'Visible','On');
 set(handles.axes_force_time,'Visible','On');
 set(handles.axes_force_distance,'Visible','On');
+ handles.save = 0;
+ %set(handles.curve_list,'String', file_names);
+ set(handles.previous_button,'Visible','On');
+set(handles.next_button,'Visible','On');
+set(handles.curve_list,'Visible','On');
 close(h);
 guidata(hObject, handles);
 
@@ -821,7 +830,7 @@ end
 
 % --- Executes when user attempts to close cps.
 function cps_CloseRequestFcn(hObject, eventdata, handles)
-delete(handles.curveParameters );
+delete(handles.curveParameters);
 try
  delete(handles.stiffnessPanel);
 catch

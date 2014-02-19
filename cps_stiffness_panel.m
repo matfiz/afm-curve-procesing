@@ -67,54 +67,81 @@ end
 % Publish the functions
 handles.setContactPoint = @setContactPoint;
 handles.calculateForceIndentation = @calculateForceIndentation;
+handles.plotToGui = @plotToGui;
 
 %Create labels in stiffness panel
-handles.l_stiffness = uicontrol('Parent',handles.panel_stiffness_segments,...
-                'Style','text',...
-                'String','Stiffness [pN/nm]',...
-                'FontSize',8,...
-                'FontWeight','bold',...
-                'Position',[20 185 90 15]);
-handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
-                'Style','text',...
-                'String','Length [nm]',...
-                'FontSize',8,...
-                'FontWeight','bold',...
-                'Position',[110 185 70 15]);
-handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
-                'Style','text',...
-                'String','R^2',...
-                'FontSize',8,...
-                'FontWeight','bold',...
-                'Position',[180 185 100 15]);
+createLabels(hObject);
 
 
 
 % Update handles structure
 guidata(hObject, handles);
 %draw force-indentation and segments if already analysed
-try
-    calculateForceIndentation(hObject);
-    if cps_handles.current_curve.stiffnessParams.numberOfSegments > 0
-        for j=1:cps_handles.current_curve.stiffnessParams.numberOfSegments,
-            try
-                displaySegmentParams(hObject,j);
-                plotSegment(hObject,j);
-            catch
-            end
-        end
-    end
-catch err
-end
+plotToGui(hObject);
 
 % UIWAIT makes cps_stiffness_panel wait for user response (see UIRESUME)
 % uiwait(handles.cps_stiffness_panel);
+
+function createLabels(hObject)
+    %read
+    handles = guidata(hObject);
+
+    handles.l_stiffness = uicontrol('Parent',handles.panel_stiffness_segments,...
+                    'Style','text',...
+                    'String','Stiffness [pN/nm]',...
+                    'FontSize',8,...
+                    'FontWeight','bold',...
+                    'Position',[20 185 90 15]);
+    handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
+                    'Style','text',...
+                    'String','Length [nm]',...
+                    'FontSize',8,...
+                    'FontWeight','bold',...
+                    'Position',[110 185 70 15]);
+    handles.l_length = uicontrol('Parent',handles.panel_stiffness_segments,...
+                    'Style','text',...
+                    'String','R^2',...
+                    'FontSize',8,...
+                    'FontWeight','bold',...
+                    'Position',[180 185 100 15]);
+function plotToGui(hObject)
+    %draw force-indentation and segments if already analysed
+    %read
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    %clear current content
+    removeAllSegments(hObject);
+    cla(handles.axes_force_indentation,'reset');
+    %draw labels
+    createLabels(hObject);
+    %draw segments and force-indentation if has stiffness fit
+    if curve.hasStiffnessFit == true
+        calculateForceIndentation(hObject);
+        if cps_handles.current_curve.stiffnessParams.numberOfSegments > 0
+            for j=1:curve.stiffnessParams.numberOfSegments,
+                try
+                    displaySegmentParams(hObject,j);
+                    plotSegment(hObject,j);
+                catch
+                end
+            end
+        end
+    else
+        disp('no stiffness params!');
+    end
+   % catch err
+    %end
+
 
 function setContactPoint(hObject, contactPoint)
     %read
     handles = guidata(hObject);
     cps_handles = guidata(handles.cps);
     curve = cps_handles.current_curve;
+    %clear current content
+    removeAllSegments(hObject);
+    cla(handles.axes_force_indentation,'reset');
     %set
     curve.hasStiffnessFit = true;
     params = StiffnessParams;
@@ -154,6 +181,7 @@ function calculateForceIndentation(hObject)
     xlabel(handles.axes_force_indentation,'Indentation [m]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
     ylabel(handles.axes_force_indentation,'Force [N]','FontWeight','bold','FontSize',12,'FontName','SansSerif');
     title(handles.axes_force_indentation, ['Force-indentation for curve ' cps_handles.current_curve.name],'interpreter','none');
+    curve.hasStiffnessFit = true;
     %save variables
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
@@ -373,6 +401,16 @@ function removeSegment(hObj,event,segmentNumber,hObject)
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
     
+function removeAllSegments(hObject)
+    %read variables
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    %delete all contents of stiffness segment parameters uitab
+    delete(get(handles.panel_stiffness_segments, 'Children'));
+    guidata(hObject, handles);
+
+    
 function addSegment(hObj,event,segmentNumber,hObject)
     %read variables
     handles = guidata(hObject);
@@ -386,7 +424,9 @@ function plotSegment(hObject,segmentNumber)
     current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
     
     %draw points
-    points = plot(current_segment.xStartPos,current_segment.yStartPos,'gx',...
+    hold(handles.axes_force_indentation,'on');
+    points = plot(handles.axes_force_indentation,...
+            current_segment.xStartPos,current_segment.yStartPos,'gx',...
             current_segment.xEndPos,current_segment.yEndPos,'gx',...
             'MarkerSize',13,...
             'LineWidth',2);
@@ -400,6 +440,7 @@ function plotSegment(hObject,segmentNumber)
     yData = curve.stiffnessParams.dataForce;
     xData = curve.stiffnessParams.dataIndentation;
     yFit = current_segment.slope*xData+current_segment.freeCoef;
+    
     segment = plot(handles.axes_force_indentation,xData(indexStart:indexEnd),yFit(indexStart:indexEnd),...
         'LineWidth',2);
     line = plot(handles.axes_force_indentation,xData(indexStart:end),yFit(indexStart:end),...

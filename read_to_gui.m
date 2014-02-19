@@ -35,5 +35,12 @@ function read_to_gui(hObject,handles,curve_index)
             set(handles.slider_relaxation,'Visible','off');
         end
     %end
+    
+    %stiffness fit
+    stiffnessPanel = findobj('tag','cps_stiffness_panel');
+    if ~isempty(stiffnessPanel)
+        stiffness_handles = guidata(stiffnessPanel);
+        stiffness_handles.plotToGui(stiffnessPanel)
+    end
     guidata(hObject, handles);
 end

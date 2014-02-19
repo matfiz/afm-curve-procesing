@@ -1,5 +1,7 @@
 function vertical_cursors(hObject,axes)
 handles = guidata(hObject);
+cps_handles = guidata(handles.cps);
+slope = cps_handles.current_curve.sensitivity;
 set(gcf, ...
    'WindowButtonDownFcn', @clickFcn, ...
    'WindowButtonUpFcn', @unclickFcn);
@@ -20,8 +22,12 @@ hCur = nan(1, 1);
 %   hCur(id) = line([NaN NaN], ylim(allAxes(id)), ...
 %      'Color', 'black', 'Parent', allAxes(id));
 %end
+hold on;
 hCur(1) = line([NaN NaN], ylim(axes), ...
       'Color', 'black', 'Parent', axes);
+slopeCur(1) = line([NaN NaN], ylim(axes), ...
+      'Color', 'red', 'Parent', axes);
+%hold off;
      function clickFcn(varargin)
         % Initiate cursor if clicked anywhere but the figure
         if strcmpi(get(gco, 'type'), 'figure')
@@ -35,8 +41,18 @@ hCur(1) = line([NaN NaN], ylim(axes), ...
      function dragFcn(varargin)
         % Get mouse location
         pt = get(gca, 'CurrentPoint');
+        hold on;
         % Update cursor line position
         set(hCur, 'XData', [pt(1), pt(1)]);
+        %update slope line pos
+        yRange = get(hCur,'YData');
+        %xMin = (yRange(1) + slope * pt(1))/slope;
+        %xMax = (yRange(2) + slope * pt(1))/slope;
+        b = ydata
+        xMin = pt(1)-yRange(1)/slope*1000;
+        xMax = pt(1)+yRange(2)/slope*1000;
+        set(slopeCur, 'XData', [xMin, xMax]);
+        %hold off;
         % Update cursor text
         for idx = 1:length(allLines)
            xdata = get(allLines(idx), 'XData');
@@ -46,8 +62,9 @@ hCur(1) = line([NaN NaN], ylim(axes), ...
               y = interp1(xdata, ydata, pt(1));
            %   set(hText(idx), 'Position', [pt(1), y], ...
            %      'String', sprintf('(%0.2f, %0.2f)', pt(1), y));
-           % I s
-               handles.setContactPoint(hObject, [pt(1),y]);
+           % I search for the x data value closest to pt(1)
+             [c index] = min(abs(xdata-pt(1)));
+               handles.setContactPoint(hObject, [xdata(index),ydata(index)]);
            else
               set(hText(idx), 'Position', [NaN NaN]);
            end
