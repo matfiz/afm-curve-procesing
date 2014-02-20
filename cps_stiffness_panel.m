@@ -472,3 +472,5 @@ function b_write_to_file_CreateFcn(hObject, eventdata, handles)
 [x,map]=imread('lib/pencil_40.png');
 %I2=imresize(x, [120 72]);
 set(hObject,'cdata',x);
+
+

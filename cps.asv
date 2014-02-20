@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 04-Feb-2014 16:59:49
+% Last Modified by GUIDE v2.5 20-Feb-2014 14:54:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -926,8 +926,8 @@ function plotAuxiliaryLine(hObject,handles)
             current_segment.xStartPos,current_segment.yStartPos,'gx',...
             current_segment.xEndPos,current_segment.yEndPos,'gx',...
             'MarkerSize',13,...
-            'LineWidth',2,
-            'Color', [0.5, 1.0, 0.0]);
+            'LineWidth',2,...
+            'Color', [0, 1.0, 0.0]);
     graph_handles{1} = points;
     
     %select fragment
@@ -940,12 +940,22 @@ function plotAuxiliaryLine(hObject,handles)
     yFit = current_segment.slope*xData+current_segment.freeCoef;
     
     segment = plot(handles.axes_force_distance,xData(indexStart:indexEnd),yFit(indexStart:indexEnd),...
-        'LineWidth',2);
+        'LineWidth',2,...
+        'Color', [0.46, 0.65, 0.2]);
     line = plot(handles.axes_force_distance,xData(indexStart:end),yFit(indexStart:end),...
-        'LineWidth',0.5);
+        'LineWidth',0.5,...
+        'Color', [0.46, 0.65, 0.2]);
     graph_handles{2} = segment;
     graph_handles{3} = line;
     %save
    	set(handles.axes_force_distance, 'UserData',graph_handles);
     guidata(hObject, handles);
+    
+function draw_previous_contact_point(hObject, handles)
+    try
+        stiffness_handles = guidata(handles.stiffnessPanel);
+        contact_point = stiffness_hand
+
+    catch err
+    end
 

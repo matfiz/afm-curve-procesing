@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 20-Feb-2014 14:54:38
+% Last Modified by GUIDE v2.5 20-Feb-2014 15:12:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -99,6 +99,9 @@ item3 = uimenu(hcmenu, 'Label', 'Edit plot', 'Callback', hcb3);
 % Locate line objects
 set(handles.axes_force_distance,'uicontextmenu',hcmenu);
 set(handles.axes_force_time,'uicontextmenu',hcmenu);
+
+%publish function
+handles.drawPreviousContactPoint = @draw_previous_contact_point
 
 % Update handles structure
 guidata(hObject, handles);
@@ -950,3 +953,16 @@ function plotAuxiliaryLine(hObject,handles)
     %save
    	set(handles.axes_force_distance, 'UserData',graph_handles);
     guidata(hObject, handles);
+    
+function draw_previous_contact_point(hObject, handles)
+    try
+        x_contact_point = handles.current_curve.stiffnessParams.xContactPoint;
+        y_contact_point = handles.current_curve.stiffnessParams.xContactPoint;
+        yRange = ylim(handles.axes_force_distance);
+        line([x_contact_point x_contact_point],...
+            yRange,...
+            'LineWidth',2,...
+            'Color', [0, 1.0, 0.0],...
+            'Parent',handles.axes_force_distance);
+    catch err
+    end
