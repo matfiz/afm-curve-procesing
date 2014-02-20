@@ -21,5 +21,8 @@ switch filterIndex
     case 1 %JPK txt file
         curve = parse_curve_jpk_ascii(pathname,fname);
     case 2 %native MultiMode curve
-        curve = parse_raw_curve_multi_mode(pathname,fname);
+        FileInfo = dir(fullfile(pathname,fname));
+        if FileInfo.bytes < 60000 %eliminate image data
+            curve = parse_raw_curve_multi_mode(pathname,fname);
+        end
 end
