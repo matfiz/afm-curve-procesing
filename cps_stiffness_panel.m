@@ -306,10 +306,6 @@ function selectPoints(hObject,segment_number)
     plotSegment(hObject,segmentNumber);
     displaySegmentParams(hObject,segmentNumber);
         
-function Min = findClosestPoint(x,y,xData,yData)
-    [a,index]=min((xData-x).^2+(yData-y).^2);
-    Min = [xData(index(1)),yData(index(1)),index(1)];
-    
 function displaySegmentParams(hObject,segmentNumber)
     %read variables
     handles = guidata(hObject);

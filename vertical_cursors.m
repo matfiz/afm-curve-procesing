@@ -44,7 +44,7 @@ slopeCur(1) = line([NaN NaN], ylim(axes), ...
         % Update cursor line position
         set(hCur, 'XData', [pt(1), pt(1)]);
         %update slope line pos
-        yRange = get(hCur,'YData')
+        yRange = get(hCur,'YData');
         %updata data
         cps_handles = guidata(handles.cps);
         curve = cps_handles.current_curve;
