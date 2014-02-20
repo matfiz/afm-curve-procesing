@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 04-Feb-2014 16:59:49
+% Last Modified by GUIDE v2.5 20-Feb-2014 14:54:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -950,4 +950,3 @@ function plotAuxiliaryLine(hObject,handles)
     %save
    	set(handles.axes_force_distance, 'UserData',graph_handles);
     guidata(hObject, handles);
-
