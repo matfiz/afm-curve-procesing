@@ -164,7 +164,7 @@ function calculateForceIndentation(hObject)
     %(approach)
     xContactPointIndex = index(1);
     curve.stiffnessParams.dataForce = curve.dataDeflection(xContactPointIndex:curve.extendLength);
-    refSlope = curve.springConstant;
+    refSlope = curve.scalingFactor;
     refB = curve.dataDeflection(xContactPointIndex)-refSlope*curve.dataHeightMeasured(xContactPointIndex);
     for i=1:length(curve.stiffnessParams.dataForce),
       curve.stiffnessParams.dataIndentation(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - (curve.stiffnessParams.dataForce(i) - refB)/refSlope;    

@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 20-Feb-2014 15:12:10
+% Last Modified by GUIDE v2.5 21-Feb-2014 14:14:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -101,7 +101,7 @@ set(handles.axes_force_distance,'uicontextmenu',hcmenu);
 set(handles.axes_force_time,'uicontextmenu',hcmenu);
 
 %publish function
-handles.drawPreviousContactPoint = @draw_previous_contact_point
+handles.drawPreviousContactPoint = @draw_previous_contact_point;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -838,6 +838,11 @@ catch
  disp('Stiffness panel inactive');
 end
 try
+ delete(handles.elasticityPanel);
+catch
+ disp('Elasticity panel inactive.');
+end
+try
  delete(handles.fileOutput);
 catch
  disp('File output panel inactive');
@@ -966,3 +971,22 @@ function draw_previous_contact_point(hObject, handles)
             'Parent',handles.axes_force_distance);
     catch err
     end
+
+
+% --------------------------------------------------------------------
+function toggle_elasticity_panel_OnCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_elasticity_panel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%handles.fileOutput = cps_write_to_file('cps',hObject);
+handles.elasticityPanel = cps_elasticity_panel('cps',hObject);
+guidata(hObject, handles);
+
+
+% --------------------------------------------------------------------
+function toggle_elasticity_panel_OffCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_elasticity_panel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+delete(handles.elasticityPanel);
+guidata(hObject, handles);
