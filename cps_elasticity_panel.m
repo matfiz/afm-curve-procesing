@@ -510,7 +510,7 @@ function fitModel(hObject)
           yFit=FunctionFungHyperelastic([radius nu], [param(1) param(2)], aData);
           %yFit=FunctionFungHyperelastic([radius nu], [-300 0.1], data_full(1,:));
           El=param(1);
-          %disp(['Hyperel: ' param(2)]);
+          disp(param);
     end
     try
         delete(handles.plot_model);

@@ -1,7 +1,7 @@
 function param=FitFunctionFungHyperelastic(const, xData, yData)% Implicit function: sphere in Sneddon model
     R=const(1); %radius
     nu=const(2); %poisson ratio    
-    params0 = [1 1];
+    params0 = [log(20*300/4.5) 1];
     yDataLog = log(yData);
     aData = FunctionFungHyperelasticIndentation(R, xData);
     if aData(1) == 0
@@ -11,13 +11,13 @@ function param=FitFunctionFungHyperelastic(const, xData, yData)% Implicit functi
     X = FunctionFungHyperelasticLog(const, aData);
     %A = dataset(X(:,1),X(:,2),yDataLog','VarNames',{'X1','X2','yDataLog'});
     %params = FunctionFungHyperelasticLog(const, params, aData);
-    func = @(params, aData) params(1) + X(:,1)' + params(2)*X(:,2)';
-    fitParams = nlinfit(aData,yDataLog,func,params0)
-    %fitParams = lsqcurvefit(func,params0, aData, yDataLog'); 
+    func = @(params, aData) params(1) + X(:,1) + params(2)*X(:,2);
+    %params = nlinfit(aData,yDataLog,func,params0);
+    x = lsqcurvefit(func,params0, aData, yDataLog'); 
     %El = params(1);
     %hyper = params(2);
-    El = exp(fitParams(1))*9*(1-nu.^2)/20;
-    b = fitParams(2);
+    El = exp(params(1))*9*(1-nu.^2)/20;
+    b = params(2);
     param = [El, b];
 end % close the function
 %---------------------------------------------------------------------------------------
