@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 21-Feb-2014 14:14:41
+% Last Modified by GUIDE v2.5 07-Mar-2014 17:35:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,21 +84,6 @@ set(handles.axes_force_time,'Visible','Off');
 set(handles.axes_force_distance,'Visible','Off');
 set(handles.adhesion_panel,'Visible','off');
 set(handles.pause_relaxation,'Visible','off');
-
-% Define a context menu; it is not attached to anything
-hcmenu = uicontextmenu;
-% Define callbacks for context menu items that change linestyle
-hcb1 = ['saveas(gca,''force-distance'',''jpg'')'];
-%hcb2 = ['saveas(gca,''force-time'',''pdf'')'];
-hcb2 = ['printpreview(gcf)'];
-hcb3 = ['plotedit(gcf, ''plotedittoolbar'', ''toggle'')'];
-% Define the context menu items and install their callbacks
-item1 = uimenu(hcmenu, 'Label', 'Save as fig', 'Callback', hcb1);
-item2 = uimenu(hcmenu, 'Label', 'Print preview', 'Callback', hcb2);
-item3 = uimenu(hcmenu, 'Label', 'Edit plot', 'Callback', hcb3);
-% Locate line objects
-set(handles.axes_force_distance,'uicontextmenu',hcmenu);
-set(handles.axes_force_time,'uicontextmenu',hcmenu);
 
 %publish function
 handles.drawPreviousContactPoint = @draw_previous_contact_point;
@@ -1002,3 +987,31 @@ function toggle_elasticity_panel_OffCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.elasticityPanel);
 guidata(hObject, handles);
+
+
+% --------------------------------------------------------------------
+function toggle_context_menu_OnCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_context_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% Define a context menu; it is not attached to anything
+hcmenu = uicontextmenu;
+% Define callbacks for context menu items that change linestyle
+hcb1 = ['saveas(gca,''force-distance'',''jpg'')'];
+%hcb2 = ['saveas(gca,''force-time'',''pdf'')'];
+hcb2 = ['printpreview(gcf)'];
+hcb3 = ['plotedit(gcf, ''plotedittoolbar'', ''toggle'')'];
+% Define the context menu items and install their callbacks
+item1 = uimenu(hcmenu, 'Label', 'Save as fig', 'Callback', hcb1);
+item2 = uimenu(hcmenu, 'Label', 'Print preview', 'Callback', hcb2);
+item3 = uimenu(hcmenu, 'Label', 'Edit plot', 'Callback', hcb3);
+% Locate line objects
+set(handles.axes_force_distance,'uicontextmenu',hcmenu);
+set(handles.axes_force_time,'uicontextmenu',hcmenu);
+
+% --------------------------------------------------------------------
+function toggle_context_menu_OffCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_context_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(get(get(handles.axes_force_distance,'UIContextMenu'),'Children'),'Visible','off')
