@@ -47,6 +47,10 @@ function curve=parse_curve_jpk_raw(pathname,fname)
         curve.StressRelaxationFitLength = curve.pauseLength/2;
         [stress_fit, params] = fit_stress_relaxation_params(curve);
         curve.dataStressRelaxation = params;
+        try
+            rmdir('tmp/curve','s');
+        catch err
+        end;
     catch err
         ws=['File ' fname ' not found or in bad format'];
         uiwait(warndlg(ws,'Warning','modal'));
