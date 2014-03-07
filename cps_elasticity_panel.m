@@ -63,6 +63,7 @@ handles.xShiftCP_use_stiffness = false;
 handles.excludeInitial = 0.0;
 handles.excludeInitial_use_stiffness = false;
 handles.model = 'sneddon_sphere';
+handles.excludeInitial = 0.0;
 
 %publish functions
 handles.setEndPoint = @setEndPoint;
@@ -449,7 +450,7 @@ function calculateForceIndentation(hObject)
     elasticityParams = curve.elasticityParams;
     %get initial exclude
     excludeInitial = elasticityParams.excludeInitial*10^(-9);
-    xCPstiffness = curve.stiffnessParams.xContactPoint
+    xCPstiffness = curve.stiffnessParams.xContactPoint;
     yCPstiffness = curve.stiffnessParams.yContactPoint;
     xSP = -excludeInitial;
     forceIndentationData = elasticityParams.force_indentation';
