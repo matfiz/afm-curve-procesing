@@ -204,10 +204,10 @@ if FilterIndex == 2
     wrong = [];
     for i=1:size(files)
         if files(i).bytes > 60000
-            wrong(end+1) = i;
+            wrong(end+1) << i
         end
     end
-    files(wrong) = [];
+    files(wrong) = []
 end
 
 handles.no_of_curves = size(files);

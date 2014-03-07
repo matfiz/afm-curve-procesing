@@ -25,6 +25,9 @@ switch filterIndex
         if FileInfo.bytes < 60000 %eliminate image data
             curve = parse_raw_curve_multi_mode(pathname,fname);
         end
-    case 3 %native JPK .jpk-force
-        curve = parse_curve_jpk_raw(pathname,fname);
+    case 2 %native MultiMode curve
+        FileInfo = dir(fullfile(pathname,fname));
+        if FileInfo.bytes < 60000 %eliminate image data
+            curve = parse_raw_curve_multi_mode(pathname,fname);
+        end
 end
