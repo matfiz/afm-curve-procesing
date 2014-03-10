@@ -20,9 +20,7 @@ function read_to_gui(hObject,handles,curve_index)
     else
         set(handles.adhesion_table,'Data',[]);
     end
-    guidata(hObject, handles);
-    %stress relaxation fit
-    handles.read_stress_relaxation(hObject, curve_index);
+    
     
     %stiffness fit
     stiffnessPanel = findobj('tag','cps_stiffness_panel');
@@ -32,4 +30,6 @@ function read_to_gui(hObject,handles,curve_index)
         handles.drawPreviousContactPoint(hObject, handles);
     end
     guidata(hObject, handles);
+    %stress relaxation fit
+    handles.read_stress_relaxation(hObject, curve_index);
 end

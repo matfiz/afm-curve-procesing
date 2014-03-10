@@ -39,6 +39,8 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         IndexC = strfind(lines, 'springConstant:');
         Index = find(~cellfun('isempty', IndexC), 1);
         curve.springConstant =  sscanf(lines{Index},'# springConstant: %f');
+        %scalingFactor
+        curve.scalingFactor = curve.springConstant;
         %extendTime
         IndexC = strfind(lines, 'force-settings.extend-scan-time:');
         Index = find(~cellfun('isempty', IndexC), 1);

@@ -17,7 +17,7 @@ function curve=parse_curve_jpk_raw(pathname,fname)
         curve.extendTime = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.extend-scan-time'));
         curve.retractTime = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.retract-scan-time'));
         curve.extendPauseTime = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.extended-pause-time'));
-        curve.scalingFactor = curve.springConstant;
+        curve.scalingFactor = (-1)*curve.springConstant
         %read Other Params
         if numberOfSegments == 2
             curve.extendLength = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.extend-k-length'));

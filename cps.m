@@ -791,6 +791,7 @@ function createLineFit(hObj,event,hObject)
     %fit line
     indexStart = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xStartPos);
     indexEnd = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xEndPos);
+
     yData = handles.current_curve.dataDeflection(indexStart:indexEnd);
     xData = handles.current_curve.dataHeightMeasured(indexStart:indexEnd);
     [p,S] = polyfit(xData,yData,1);
