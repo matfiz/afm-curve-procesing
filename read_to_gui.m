@@ -1,5 +1,6 @@
 function read_to_gui(hObject,handles,curve_index)
     plot_curve(hObject,handles);
+    plot_time_curve(hObject,handles);
 
     %read adhesion steps
     [w k] = size(handles.current_curve.dataSteps);
@@ -19,22 +20,9 @@ function read_to_gui(hObject,handles,curve_index)
     else
         set(handles.adhesion_table,'Data',[]);
     end
+    guidata(hObject, handles);
     %stress relaxation fit
-    %if handles.curves(curve_index).mode == 'constant-height'
-        if handles.current_curve.hasStressRelaxation == true
-            fit_stress_relaxation(hObject,handles,curve_index); 
-            set(handles.checkbox_relaxation,'Value',1);
-            set(handles.table_relaxation,'Visible','on');
-            set(handles.slider_relaxation,'Visible','on');
-            set(handles.slider_relaxation,'Max',handles.current_curve.pauseLength);
-            set(handles.slider_relaxation,'Value',handles.curves(curve_index).StressRelaxationFitLength);
-            set(handles.f_relaxation_fit_range,'String',num2str(handles.curves(curve_index).StressRelaxationFitLength/handles.current_curve.pauseLength*100,'%5.0f%%'));
-        else
-            set(handles.checkbox_relaxation,'Value',0);
-            set(handles.table_relaxation,'Visible','off');
-            set(handles.slider_relaxation,'Visible','off');
-        end
-    %end
+    handles.read_stress_relaxation(hObject, curve_index);
     
     %stiffness fit
     stiffnessPanel = findobj('tag','cps_stiffness_panel');

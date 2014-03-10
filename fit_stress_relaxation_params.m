@@ -5,8 +5,7 @@ StressRelaxationFunction =  fittype('a0+a1*exp(-x/tau1)+a2*exp(-x/tau2)',...
     'dependent','y',...
     'independent','x');
 time_pause=curve.force_time_pause;
-disp(curve.StressRelaxationFitLength);
-fit_length = min([curve.StressRelaxationFitLength,numel(time_pause(1,:)),8192]);
+fit_length = min([floor(curve.StressRelaxationFitLength),numel(time_pause(1,:)),8192]);
 x_time_data=time_pause(1,1:fit_length);
 y_time_data=time_pause(2,1:fit_length);
 %suma dwóch eksponent

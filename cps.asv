@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 21-Feb-2014 14:14:41
+% Last Modified by GUIDE v2.5 09-Mar-2014 09:19:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,10 +68,13 @@ handles.view_mode = 1;
 %2 - approach only
 %3 - retract only
 
+%stress relaxation
 handles.current_steps = []; %matrix for storing current adhesion steps
 %give names to columns
 cnames = {'<html><center />&delta;z</html>','<html><center />&delta;F</html>'};
 set(handles.adhesion_table,'ColumnName',cnames);
+
+
 %info about last processed directory
 handles.current_dir = '';
 
@@ -80,28 +83,12 @@ set(handles.previous_button,'Visible','Off');
 set(handles.next_button,'Visible','Off');
 set(handles.curve_list,'Visible','Off');
 set(handles.curve_info,'Visible','Off');
-set(handles.axes_force_time,'Visible','Off');
 set(handles.axes_force_distance,'Visible','Off');
 set(handles.adhesion_panel,'Visible','off');
-set(handles.pause_relaxation,'Visible','off');
-
-% Define a context menu; it is not attached to anything
-hcmenu = uicontextmenu;
-% Define callbacks for context menu items that change linestyle
-hcb1 = ['saveas(gca,''force-distance'',''jpg'')'];
-%hcb2 = ['saveas(gca,''force-time'',''pdf'')'];
-hcb2 = ['printpreview(gcf)'];
-hcb3 = ['plotedit(gcf, ''plotedittoolbar'', ''toggle'')'];
-% Define the context menu items and install their callbacks
-item1 = uimenu(hcmenu, 'Label', 'Save as fig', 'Callback', hcb1);
-item2 = uimenu(hcmenu, 'Label', 'Print preview', 'Callback', hcb2);
-item3 = uimenu(hcmenu, 'Label', 'Edit plot', 'Callback', hcb3);
-% Locate line objects
-set(handles.axes_force_distance,'uicontextmenu',hcmenu);
-set(handles.axes_force_time,'uicontextmenu',hcmenu);
 
 %publish function
 handles.drawPreviousContactPoint = @draw_previous_contact_point;
+handles.read_stress_relaxation = @read_stress_relaxation;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -204,10 +191,10 @@ if FilterIndex == 2
     wrong = [];
     for i=1:size(files)
         if files(i).bytes > 60000
-            wrong(end+1) << i
+            wrong(end+1) = i;
         end
     end
-    files(wrong) = []
+    files(wrong) = [];
 end
 
 handles.no_of_curves = size(files);
@@ -721,125 +708,6 @@ read_to_gui(hObject,handles,1);
 handles.no_of_curves = 1;
 guidata(hObject, handles);
 
-% --- Executes on button press in checkbox_relaxation.
-function checkbox_relaxation_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_relaxation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox_relaxation
-state = get(hObject,'Value');
-
-if state == 1
-    handles.curves(handles.current_curve_index).hasStressRelaxation = true;
-    set(handles.table_relaxation,'Visible','On');
-else
-    handles.curves(handles.current_curve_index).hasStressRelaxation = false;
-    set(handles.table_relaxation,'Visible','Off');
-end
-disp(handles.curves(handles.current_curve_index).hasStressRelaxation);
-guidata(hObject, handles);
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over checkbox_relaxation.
-function checkbox_relaxation_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to checkbox_relaxation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in b_export_relaxation.
-function b_export_relaxation_Callback(hObject, eventdata, handles)
-% hObject    handle to b_export_relaxation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename, pathname,filterindex] = uiputfile('*.csv', 'Save relaxation to CSV');
-h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
-fid = fopen([pathname '/' filename],'w');
-header = {'#Curve name','a0','a1','a2','tau1','tau2'};
-[rows,cols]=size(header);
-for i=1:rows
-    fprintf(fid,'%s,',header{i,1:end-1});
-    fprintf(fid,'%s\n',header{i,end});
-end
-for i=1:handles.no_of_curves
-    %if exist('handles.curves(i).dataStressRelaxation')
-        if handles.curves(i).hasStressRelaxation
-           data = handles.curves(i).dataStressRelaxation;
-           fprintf(fid,'%s,',handles.curves(i).name);
-           fprintf(fid,'%e,%e,%e,%e,%e\n',data(1:5));
-        end
-    %end
-end
-fclose(fid);
-close(h);
-
-
-% --- Executes on button press in b_export_creep.
-function b_export_creep_Callback(hObject, eventdata, handles)
-% hObject    handle to b_export_creep (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on slider movement.
-function slider_relaxation_Callback(hObject, eventdata, handles)
-% hObject    handle to slider_relaxation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-value = get(hObject,'Value');
-handles.curves(handles.current_curve_index).StressRelaxationFitLength = value;
-set(handles.f_relaxation_fit_range,'String',num2str(value/get(hObject,'Max')*100,'%5.0f%%'));
-[stress_fit, params] = fit_stress_relaxation_params(handles.curves(handles.current_curve_index));
-handles.curves(handles.current_curve_index).dataStressRelaxation = params;
-guidata(hObject, handles);
-read_to_gui(hObject,handles,handles.current_curve_index);
-
-% --- Executes during object creation, after setting all properties.
-function slider_relaxation_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to slider_relaxation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: slider controls usually have a light gray background.
-if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor',[.9 .9 .9]);
-end
-
-
-
-function f_relaxation_fit_range_Callback(hObject, eventdata, handles)
-% hObject    handle to f_relaxation_fit_range (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of f_relaxation_fit_range as text
-%        str2double(get(hObject,'String')) returns contents of f_relaxation_fit_range as a double
-
-value_str = strrep(get(hObject,'String'), '%', '');
-value = str2double(value_str);
-handles.curves(handles.current_curve_index).StressRelaxationFitLength = floor(value*get(handles.slider_relaxation,'Max')/100);
-set(handles.slider_relaxation,'Value',floor(value*get(handles.slider_relaxation,'Max')/100));
-[stress_fit, params] = fit_stress_relaxation_params(handles.curves(handles.current_curve_index));
-handles.curves(handles.current_curve_index).dataStressRelaxation = params;
-guidata(hObject, handles);
-read_to_gui(hObject,handles,handles.current_curve_index);
-
-
-% --- Executes during object creation, after setting all properties.
-function f_relaxation_fit_range_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to f_relaxation_fit_range (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes when user attempts to close cps.
 function cps_CloseRequestFcn(hObject, eventdata, handles)
@@ -859,6 +727,10 @@ try
 catch
  disp('File output panel inactive');
 end
+try 
+ delete(handles.relaxationPanel);
+catch err
+end;
 delete(hObject);
 
 
@@ -1002,3 +874,81 @@ function toggle_elasticity_panel_OffCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.elasticityPanel);
 guidata(hObject, handles);
+
+
+% --------------------------------------------------------------------
+function toggle_context_menu_OnCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_context_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% Define a context menu; it is not attached to anything
+hcmenu = uicontextmenu;
+% Define callbacks for context menu items that change linestyle
+hcb1 = ['saveas(gca,''force-distance'',''jpg'')'];
+%hcb2 = ['saveas(gca,''force-time'',''pdf'')'];
+hcb2 = ['printpreview(gcf)'];
+hcb3 = ['plotedit(gcf, ''plotedittoolbar'', ''toggle'')'];
+% Define the context menu items and install their callbacks
+item1 = uimenu(hcmenu, 'Label', 'Save as fig', 'Callback', hcb1);
+item2 = uimenu(hcmenu, 'Label', 'Print preview', 'Callback', hcb2);
+item3 = uimenu(hcmenu, 'Label', 'Edit plot', 'Callback', hcb3);
+% Locate line objects
+set(handles.axes_force_distance,'uicontextmenu',hcmenu);
+set(handles.axes_force_time,'uicontextmenu',hcmenu);
+
+% --------------------------------------------------------------------
+function toggle_context_menu_OffCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_context_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(get(get(handles.axes_force_distance,'UIContextMenu'),'Children'),'Visible','off')
+
+
+% --------------------------------------------------------------------
+function toggle_stress_relaxation_OnCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_stress_relaxation (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.relaxationPanel = cps_stress_relaxation('cps',hObject);
+guidata(hObject, handles);
+
+% --------------------------------------------------------------------
+function toggle_stress_relaxation_OffCallback(hObject, eventdata, handles)
+% hObject    handle to toggle_stress_relaxation (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+delete(handles.relaxationPanel);
+guidata(hObject, handles);
+
+function read_stress_relaxation(hObject, curve_number)
+%read handles
+handles = guidata(hObject);
+%read relaxation handles
+    relaxationPanel = findobj('tag','cps_stress_relaxation');
+    if isempty(relaxationPanel)
+       handles.relaxationPanel = cps_stress_relaxation('cps',hObject);
+       relaxationPanel = handles.relaxationPanel;
+       guidata(hObject,handles)
+    end
+    handlesRelaxation = guidata(relaxationPanel);
+%get relaxation info
+curve = handles.curves(curve_number);
+if curve.mode == 'constant-height'
+    if curve.hasStressRelaxation == true
+        fit_stress_relaxation(relaxationPanel,hObject,curve_number); 
+        handlesRelaxation = guidata(relaxationPanel);
+        set(handlesRelaxation.checkbox_relaxation,'Value',1);
+        set(handlesRelaxation.table_relaxation,'Visible','on');
+        set(handlesRelaxation.slider_relaxation,'Visible','on');
+        set(handlesRelaxation.slider_relaxation,'Max',handles.current_curve.pauseLength);
+        set(handlesRelaxation.slider_relaxation,'Value',handles.curves(curve_number).StressRelaxationFitLength);
+        set(handlesRelaxation.f_relaxation_fit_range,'String',num2str(handles.curves(curve_number).StressRelaxationFitLength/handles.current_curve.pauseLength*100,'%5.0f%%'));
+    else
+        set(handlesRelaxation.checkbox_relaxation,'Value',0);
+        set(handlesRelaxation.table_relaxation,'Visible','off');
+        set(handlesRelaxation.slider_relaxation,'Visible','off');
+    end
+end
+    
+%save relaxation handles
+guidata(relaxationPanel, handlesRelaxation);
