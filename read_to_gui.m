@@ -1,6 +1,6 @@
 function read_to_gui(hObject,handles,curve_index)
     plot_curve(hObject,handles);
-    plot_time_curve(hObject,handles);
+    plot_force_time_curve(hObject,handles);
 
     %read adhesion steps
     [w k] = size(handles.current_curve.dataSteps);
@@ -30,6 +30,5 @@ function read_to_gui(hObject,handles,curve_index)
         handles.drawPreviousContactPoint(hObject, handles);
     end
     guidata(hObject, handles);
-    %stress relaxation fit
-    handles.read_stress_relaxation(hObject, curve_index);
+    
 end

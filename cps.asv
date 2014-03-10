@@ -88,6 +88,7 @@ set(handles.adhesion_panel,'Visible','off');
 
 %publish function
 handles.drawPreviousContactPoint = @draw_previous_contact_point;
+handles.read_stress_relaxation = @read_stress_relaxation;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -785,24 +786,24 @@ function createLineFit(hObj,event,hObject)
     hold on;
     handles.auxiliary_line = StiffnessSegment;
     %get graph data
-    xData = handles.current_curve.dataHeightMeasured(1:handles.current_curve.extendLength);
-    yData = handles.current_curve.dataDeflection(1:handles.current_curve.extendLength);
+    xData = handles.current_curve.dataHeightMeasured(1:handles.current_curve.extendLength));
+    y
     %wait for left, then right mouse button press
     while but == 1
         [x,y,but] = ginputax(handles.axes_force_distance,1);
         if but == 1
-            Min = findClosestPoint(x,y,xData,yData);
+            Min = findClosestPoint(x,y,handles.current_curve.dataHeightMeasured,handles.current_curve.dataDeflection);
             handles.auxiliary_line.xStartPos = Min(1);
             handles.auxiliary_line.yStartPos = Min(2);
         end
     end
-    Min = findClosestPoint(x,y,xData,yData);
+    Min = findClosestPoint(x,y,handles.current_curve.dataHeightMeasured,handles.current_curve.dataDeflection);
     handles.auxiliary_line.xEndPos = Min(1);
     handles.auxiliary_line.yEndPos = Min(2);
     set(handles.status_bar,'Visible','Off');
     %fit line
-    indexStart = find(xData == handles.auxiliary_line.xStartPos);
-    indexEnd = find(xData == handles.auxiliary_line.xEndPos);
+    indexStart = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xStartPos);
+    indexEnd = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xEndPos);
     %if points clicked in the oposite order, switch them
     if indexStart > indexEnd
         temp = indexStart;
@@ -939,4 +940,35 @@ function toggle_stress_relaxation_OffCallback(hObject, eventdata, handles)
 delete(handles.relaxationPanel);
 guidata(hObject, handles);
 
-
+function read_stress_relaxation(hObject, curve_number)
+%read handles
+handles = guidata(hObject);
+%read relaxation handles
+    relaxationPanel = findobj('tag','cps_stress_relaxation');
+    if isempty(relaxationPanel)
+       %handles.relaxationPanel = cps_stress_relaxation('cps',handles.output);
+       %relaxationPanel = handles.relaxationPanel;
+       %guidata(hObject,handles);
+    end
+    handlesRelaxation = guidata(relaxationPanel);
+%get relaxation info
+curve = handles.curves(curve_number);
+if curve.mode == 'constant-height'
+    if curve.hasStressRelaxation == true
+        fit_stress_relaxation(relaxationPanel,hObject,curve_number); 
+        handlesRelaxation = guidata(relaxationPanel);
+        set(handlesRelaxation.checkbox_relaxation,'Value',1);
+        set(handlesRelaxation.table_relaxation,'Visible','on');
+        set(handlesRelaxation.slider_relaxation,'Visible','on');
+        set(handlesRelaxation.slider_relaxation,'Max',handles.current_curve.pauseLength);
+        set(handlesRelaxation.slider_relaxation,'Value',handles.curves(curve_number).StressRelaxationFitLength);
+        set(handlesRelaxation.f_relaxation_fit_range,'String',num2str(handles.curves(curve_number).StressRelaxationFitLength/handles.current_curve.pauseLength*100,'%5.0f%%'));
+    else
+        set(handlesRelaxation.checkbox_relaxation,'Value',0);
+        set(handlesRelaxation.table_relaxation,'Visible','off');
+        set(handlesRelaxation.slider_relaxation,'Visible','off');
+    end
+end
+    
+%save relaxation handles
+guidata(relaxationPanel, handlesRelaxation);

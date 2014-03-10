@@ -218,7 +218,7 @@ value = str2double(value_str);
 cpsHandles.curves(cpsHandles.current_curve_index).StressRelaxationFitLength = floor(value*get(handles.slider_relaxation,'Max')/100);
 set(handles.slider_relaxation,'Value',floor(value*get(handles.slider_relaxation,'Max')/100));
 %process
-cpsHandles.curves(cpsHandles.current_curve_index).StressRelaxationFitLength = floor(value*get(handles.slider_relaxation,'Max')/100);
+cpsHandles.curves(cpsHandles.current_curve_index).StressRelaxationFitLength = value;
 cpsHandles.current_curve = cpsHandles.curves(cpsHandles.current_curve_index);
 guidata(hObject, handles);
 guidata(cps, cpsHandles);

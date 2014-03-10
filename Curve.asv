@@ -85,19 +85,20 @@ classdef Curve
         
         function data = distance_time(obj)
          data(1,:) = obj.dataSeriesTime(1:length(obj.dataSeriesTime));
-         data(2,:) = obj.dataHeightMeasured(1:length(obj.dataHeightMeasured));
+         data(2,:) = obj.dataDeflection(1:length(obj.dataDeflection));
         end % distance_time()
         function data = distance_time_approach(obj)
+         % disp(['Ala ' obj.extendLength])
          data(1,:) = obj.dataSeriesTime(1:obj.extendLength);
-         data(2,:) = obj.dataHeightMeasured(1:obj.extendLength);
+         data(2,:) = obj.dataDeflection(1:obj.extendLength);
         end % distance_time_approach()
         function data = distance_time_pause(obj)
          data(1,:) = obj.dataSeriesTime(obj.extendLength+1:obj.extendLength+obj.pauseLength);
-         data(2,:) = obj.dataHeightMeasured(obj.extendLength+1:obj.extendLength+obj.pauseLength);
+         data(2,:) = obj.dataDeflection(obj.extendLength+1:obj.extendLength+obj.pauseLength);
         end % distance_time_pause()
         function data = distance_time_retract(obj)
          data(1,:) = obj.dataSeriesTime(obj.extendLength+obj.pauseLength+1:length(obj.dataSeriesTime));
-         data(2,:) = obj.dataHeightMeasured(obj.extendLength+obj.pauseLength+1:length(obj.dataHeightMeasured));
+         data(2,:) = obj.dataDeflection(obj.extendLength+obj.pauseLength+1:length(obj.dataDeflection));
         end % distance_time_retract()
         
         function SetDataSteps(obj, step_array)

@@ -8,35 +8,48 @@ switch curve.mode
     case 'constant-height'
         if strcmpi(get(get(handles.uipanel_curve_type,'SelectedObject'),'Tag'),'radio_force_time')
             [StressRelaxationFit, parameters] = fit_stress_relaxation_params(curve);
+            params = parameters;
+            axes(handles.axes_force_time);
+            hold on;
             time_pause=curve.force_time_pause;
+            x_time_data=time_pause(1,:);
+            y_time_data=time_pause(2,:);
+            axis([min(x_time_data) max(x_time_data) min(y_time_data) max(y_time_data)]);
+            try %delete previous graph, if exists
+               delete(handles.current_stress_relaxation_plot);
+            catch err
+            end
+            wykres = plot(StressRelaxationFit);
+            set(wykres,'LineWidth',2,'LineStyle','-.','Color',[.2 .8 0]);
+            axis auto;
+            hold off;
+            curve.dataStressRelaxation = params;
         end
     case 'constant-force'
-        if strcmpi(get(get(handles.uipanel_curve_type,'SelectedObject'),'Tag'),'radio_distance_time')
+        if strcmpi(get(get(handles.uipanel_curve_type,'SelectedObject'),'Tag'),'radio_force_distance')
             [CreepFit, parameters] = fit_creep_compliance_params(curve);
+            
             time_pause=curve.distance_time_pause;
+            
         end
 end
-if exist('parameters')
-    params = parameters;
-    axes(handles.axes_force_time);
-    hold on;
-    x_time_data=time_pause(1,:);
-    y_time_data=time_pause(2,:);
-    axis([min(x_time_data) max(x_time_data) min(y_time_data) max(y_time_data)]);
-    try %delete previous graph, if exists
-       delete(handles.current_stress_relaxation_plot);
-    catch err
-    end
-    wykres = plot(CreepFit);
-    set(wykres,'LineWidth',2,'LineStyle','-.','Color',[.2 .8 0]);
-    axis auto;
-    hold off;
-    curve.dataStressRelaxation = params;
-    handles.current_stress_relaxation = params;
-    handles.current_stress_relaxation_plot = wykres;
-    handlesMain.curves(curve_number) = curve;
-    handlesMain.current_curve = curve;
+x_time_data=time_pause(1,:);
+y_time_data=time_pause(2,:);
+axis([min(x_time_data) max(x_time_data) min(y_time_data) max(y_time_data)]);
+try %delete previous graph, if exists
+   delete(handles.current_stress_relaxation_plot);
+catch err
 end
+
+wykres = plot(CreepFit);
+set(wykres,'LineWidth',2,'LineStyle','-.','Color',[.2 .8 0]);
+axis auto;
+hold off;
+curve.dataStressRelaxation = params;
+handles.current_stress_relaxation = params;
+handles.current_stress_relaxation_plot = wykres;
+handlesMain.curves(curve_number) = curve;
+handlesMain.current_curve = curve;
 %show results
 switch curve.mode
     case 'constant-height'
