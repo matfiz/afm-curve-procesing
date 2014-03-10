@@ -22,7 +22,7 @@ function varargout = cps_stress_relaxation(varargin)
 
 % Edit the above text to modify the response to help cps_stress_relaxation
 
-% Last Modified by GUIDE v2.5 10-Mar-2014 01:20:17
+% Last Modified by GUIDE v2.5 10-Mar-2014 11:30:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,9 +71,7 @@ set(handles.axes_force_time,'Visible','Off');
 % Update handles structure
 guidata(hObject, handles);
 handles = guidata(hObject);
-%try to read stress relaxation
-plot_time_curve(cps,cps_handles);
-cps_handles.read_stress_relaxation(cps, cps_handles.current_curve_index);
+
 % UIWAIT makes cps_stress_relaxation wait for user response (see UIRESUME)
 % uiwait(handles.cps_stress_relaxation);
 

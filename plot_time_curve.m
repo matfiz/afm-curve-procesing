@@ -2,9 +2,10 @@ function plot_time_curve(hObject,handles)
 %read params
 relaxationPanel = findobj('tag','cps_stress_relaxation');
 if isempty(relaxationPanel)
-   handles.relaxationPanel = cps_stress_relaxation('cps',handles.output);
+   %handles.relaxationPanel = cps_stress_relaxation('cps',handles.output);
    set(handles.toggle_stress_relaxation,'State','On');
-   relaxationPanel = handles.relaxationPanel;
+   relaxationPanel = findobj('tag','cps_stress_relaxation');
+   %relaxationPanel = handles.relaxationPanel;
     %cps('toggle_stress_relaxation_OnCallback',handles.output,1,guidata(handles.output))
    %guidata(hObject, handles);
 end
