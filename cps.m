@@ -785,22 +785,25 @@ function createLineFit(hObj,event,hObject)
     axes(handles.axes_force_distance);
     hold on;
     handles.auxiliary_line = StiffnessSegment;
+    %get graph data
+    xData = handles.current_curve.dataHeightMeasured(1:handles.current_curve.extendLength);
+    yData = handles.current_curve.dataDeflection(1:handles.current_curve.extendLength);
     %wait for left, then right mouse button press
     while but == 1
         [x,y,but] = ginputax(handles.axes_force_distance,1);
         if but == 1
-            Min = findClosestPoint(x,y,handles.current_curve.dataHeightMeasured,handles.current_curve.dataDeflection);
+            Min = findClosestPoint(x,y,xData,yData);
             handles.auxiliary_line.xStartPos = Min(1);
             handles.auxiliary_line.yStartPos = Min(2);
         end
     end
-    Min = findClosestPoint(x,y,handles.current_curve.dataHeightMeasured,handles.current_curve.dataDeflection);
+    Min = findClosestPoint(x,y,xData,yData);
     handles.auxiliary_line.xEndPos = Min(1);
     handles.auxiliary_line.yEndPos = Min(2);
     set(handles.status_bar,'Visible','Off');
     %fit line
-    indexStart = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xStartPos);
-    indexEnd = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xEndPos);
+    indexStart = find(xData == handles.auxiliary_line.xStartPos);
+    indexEnd = find(xData == handles.auxiliary_line.xEndPos);
     %if points clicked in the oposite order, switch them
     if indexStart > indexEnd
         temp = indexStart;
