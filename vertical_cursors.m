@@ -23,9 +23,9 @@ hCur = nan(1, 1);
 %end
 hold on;
 hCur(1) = line([NaN NaN], ylim(axes), ...
-      'Color', 'black', 'Parent', axes);
+      'Color', 'black', 'Parent', axes, 'Tag', 'cursor');
 slopeCur(1) = line([NaN NaN], ylim(axes), ...
-      'Color', 'red', 'Parent', axes);
+      'Color', 'red', 'Parent', axes, 'Tag', 'cursor');
 %hold off;
      function clickFcn(varargin)
         % Initiate cursor if clicked anywhere but the figure
@@ -63,7 +63,7 @@ slopeCur(1) = line([NaN NaN], ylim(axes), ...
            %      'String', sprintf('(%0.2f, %0.2f)', pt(1), y));
            % I search for the x data value closest to pt(1)
              [c index] = min(abs(xdata-pt(1)));
-               handles.setContactPoint(hObject, [xdata(index),ydata(index)]);
+               handles.setContactPoint(handles.output, [xdata(index),ydata(index)]);
                %draw the slope on graph
                 b = ydata(index)-slope*xdata(index);
                 xMin = (yRange(1)-b)/slope;

@@ -749,7 +749,7 @@ handles.b_create_line_fit = uicontrol('Parent',handles.output,...
                 'FontSize',8,...
                 'FontWeight','bold',...
                 'ForegroundColor', [1 1 1],...
-                'Position',[560 380 100 30],...
+                'Position',[560 10 100 30],...
                 'Backgroundcolor', [0 0.4 0.4],...
                 'Callback', {@createLineFit,hObject});
 guidata(hObject, handles);
@@ -763,6 +763,16 @@ function toggle_stiffness_panel_OffCallback(hObject, eventdata, handles)
 delete(handles.stiffnessPanel);
 delete(handles.fileOutput);
 delete(handles.b_create_line_fit);
+%remove callbacks
+set(handles.output, ...
+   'WindowButtonDownFcn', '', ...
+   'WindowButtonUpFcn', '',...
+   'WindowButtonMotionFcn','');
+%delete cursor lines
+cursorLines = findobj(handles.axes_force_distance, 'type', 'line', 'Tag', 'cursor');
+for i=1:length(cursorLines)
+    delete(cursorLines(i));
+end
 guidata(hObject, handles);
 
           
@@ -791,7 +801,12 @@ function createLineFit(hObj,event,hObject)
     %fit line
     indexStart = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xStartPos);
     indexEnd = find(handles.current_curve.dataHeightMeasured == handles.auxiliary_line.xEndPos);
-
+    %if points clicked in the oposite order, switch them
+    if indexStart > indexEnd
+        temp = indexStart;
+        indexStart = indexEnd;
+        indexEnd = temp;
+    end
     yData = handles.current_curve.dataDeflection(indexStart:indexEnd);
     xData = handles.current_curve.dataHeightMeasured(indexStart:indexEnd);
     [p,S] = polyfit(xData,yData,1);
