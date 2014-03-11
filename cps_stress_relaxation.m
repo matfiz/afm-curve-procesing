@@ -167,42 +167,13 @@ for i=1:cpsHandles.no_of_curves
     if cpsHandles.curves(i).hasStressRelaxation
         data = cpsHandles.curves(i).dataStressRelaxation;
         if length(data) > 3
-            row = {cpsHandles.curves(i).name,cpsHandles.curves(i).mode,data(1),data(2),data(3),data(4),data(5)}
-            output = [output;row]
+            row = {cpsHandles.curves(i).name,cpsHandles.curves(i).mode,data(1),data(2),data(3),data(4),data(5)};
+            output = [output;row];
         end
     end
 end
 xlswrite([pathname filename],output);
 close(h);
-%[filename, pathname,filterindex] = uiputfile('*.csv', 'Save relaxation to CSV');
-%fid = fopen([pathname '/' filename],'w');
-%header = {'#Curve name','a0','a1','a2','tau1','tau2'};
-%[rows,cols]=size(header);
-%for i=1:rows
-%    fprintf(fid,'%s,',header{i,1:end-1});
-%    fprintf(fid,'%s\n',header{i,end});
-%end
-%for i=1:handles.no_of_curves
-    %if exist('handles.curves(i).dataStressRelaxation')
-%        if handles.curves(i).hasStressRelaxation
-%           data = handles.curves(i).dataStressRelaxation;
-%          fprintf(fid,'%s,',handles.curves(i).name);
-%          fprintf(fid,'%e,%e,%e,%e,%e\n',data(1:5));
-%        end
-    %end
-%end
-%fclose(fid);
-
-
-
-
-% --- Executes on button press in b_export_creep.
-function b_export_creep_Callback(hObject, eventdata, handles)
-% hObject    handle to b_export_creep (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 
 
 % --- Executes during object creation, after setting all properties.

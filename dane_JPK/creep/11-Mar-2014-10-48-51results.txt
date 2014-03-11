@@ -1,0 +1,2 @@
+Curve name	Stiffness - slope 1 [pN/nm]		Stiffness - slope 2 [pN/nm]	Stiffness - slope 3 [pN/nm]	Length - slope 1 [nm]	Length - slope 2 [nm]	Length - slope 3 [nm]
+\force-save-2013.05.10-14.38.18.jpk-force	-0.065566	0.000000	0.000000	159.422338	0.000000	0.000000

@@ -16,6 +16,7 @@ classdef ElasticityParams
        model
        radius = 2500
        E = 0
+       b = 0
        dataForce
        dataIndentation
     end

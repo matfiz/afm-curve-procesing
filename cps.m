@@ -652,6 +652,7 @@ set(handles.axes_force_distance,'Visible','On');
  set(handles.previous_button,'Visible','On');
 set(handles.next_button,'Visible','On');
 set(handles.curve_list,'Visible','On');
+handles.current_dir = [pathname];
 close(h);
 guidata(hObject, handles);
 

@@ -65,7 +65,8 @@ handles.excludeInitial_use_stiffness = false;
 handles.model = 'sneddon_sphere';
 handles.excludeInitial = 0.0;
 
-
+%open file output
+handles.fileOutput = cps_write_to_file('cps',hObject);
 
 %publish functions
 handles.setEndPoint = @setEndPoint;
@@ -77,10 +78,6 @@ if ~isempty(cpsInput)
    handles.cps = varargin{cpsInput+1};
    cps_handles = guidata(handles.cps);
 end
-
-%open file output
-handles.fileOutput = cps_write_to_file('cps',handles.cps);
-set(handles.fileOutput, 'Name', 'Elasticity file output');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -224,10 +221,9 @@ end
 
 % --- Executes on button press in b_write_to_file.
 function b_write_to_file_Callback(hObject, eventdata, handles)
-    handles = guidata(hObject);
-    cps_handles = guidata(handles.cps);
-    fileOutput_handles = guidata(handles.fileOutput);
-    fileOutput_handles.write_elasticity(handles.fileOutput);
+% hObject    handle to b_write_to_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 function e_exclude_Callback(hObject, eventdata, handles)
 % hObject    handle to e_exclude (see GCBO)
@@ -328,7 +324,6 @@ guidata(hObject, handles);
 % --- Executes when user attempts to close elasticity.
 function elasticity_CloseRequestFcn(hObject, eventdata, handles)
 %panel can be closed only from CPS
-delete(handles.fileOutput);
 
 % --- Executes on button press in b_update.
 function b_update_Callback(hObject, eventdata, handles)
