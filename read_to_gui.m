@@ -1,6 +1,8 @@
 function read_to_gui(hObject,handles,curve_index)
     plot_curve(hObject,handles);
-    plot_force_time_curve(hObject,handles);
+    if ~isempty(handles.current_curve.dataSeriesTime)
+        plot_time_curve(hObject,handles);
+    end
 
     %read adhesion steps
     [w k] = size(handles.current_curve.dataSteps);
