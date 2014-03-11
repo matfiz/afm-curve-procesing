@@ -394,12 +394,16 @@ function calculateForceIndentation(hObject)
     curve = cps_handles.current_curve;
     %check if elasticity params already exist
     if curve.hasElasticityFit == true
-        set(handles.e_shift_cp,'Value',curve.elasticityParams.xShiftCP);
+        set(handles.e_shift_cp,'String',curve.elasticityParams.xShiftCP);
+        handles.xShiftCP = curve.elasticityParams.xShiftCP;
         set(handles.checkbox_use_value_of_first_slope,'Value',curve.elasticityParams.xShiftCP_use_stiffness);
-        set(handles.e_exclude,'Value',curve.elasticityParams.excludeInitial);
+        elasticityParams.xShiftCP_use_stiffness = curve.elasticityParams.xShiftCP_use_stiffness;
+        set(handles.e_exclude,'String',curve.elasticityParams.excludeInitial);
+        handles.excludeInitial = curve.elasticityParams.excludeInitial;
         set(handles.checkbox_exclude_value_of_first_slope,'Value',curve.elasticityParams.excludeInitial_use_stiffness);
-        set(handles.e_elasticity_parameter,'Value',curve.elasticityParams.E);
-        set(handles.e_radius,'Value',curve.elasticityParams.radius);
+        elasticityParams.excludeInitial_use_stiffness = curve.elasticityParams.excludeInitial_use_stiffness;
+        set(handles.e_elasticity_parameter,'String',curve.elasticityParams.E);
+        set(handles.e_radius,'String',curve.elasticityParams.radius*10^6);
         handles.model = curve.elasticityParams.model;
         set(handles.(['radio_' handles.model]), 'Value', 1);
         handles.radius = curve.elasticityParams.radius;
