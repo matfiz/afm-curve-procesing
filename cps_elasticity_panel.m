@@ -311,18 +311,27 @@ function checkbox_exclude_value_of_first_slope_Callback(hObject, eventdata, hand
 % --- Executes on button press in radio_sneddon_sphere.
 function radio_sneddon_sphere_Callback(hObject, eventdata, handles)
 handles.model = 'sneddon_sphere';
+cps_handles = guidata(handles.cps);
+cps_handles.current_curve.elasticityParams.model = 'sneddon_sphere';
 guidata(hObject, handles);
+guidata(handles.cps,cps_handles);
 
 
 % --- Executes on button press in radio_hertz_sphere.
 function radio_hertz_sphere_Callback(hObject, eventdata, handles)
 handles.model = 'hertz_sphere';
+cps_handles = guidata(handles.cps);
+cps_handles.current_curve.elasticityParams.model = 'hertz_sphere';
 guidata(hObject, handles);
+guidata(handles.cps,cps_handles);
 
 % --- Executes on button press in radio_fung_hyperelastic.
 function radio_fung_hyperelastic_Callback(hObject, eventdata, handles)
 handles.model = 'fung_hyperelastic';
+cps_handles = guidata(handles.cps);
+cps_handles.current_curve.elasticityParams.model = 'fung_hyperelastic';
 guidata(hObject, handles);
+guidata(handles.cps,cps_handles);
 
 
 % --- Executes when user attempts to close elasticity.
@@ -353,6 +362,10 @@ function plotToGui(hObject)
         axes(handles.axes_force_indentation);
         elasticity_cursor(hObject,handles.axes_force_indentation);
         calculateStartPoints(hObject);
+        try
+            fitModel(hObject);
+        catch
+        end;
     else
         disp('no contact point!');
     end
@@ -387,6 +400,8 @@ function calculateForceIndentation(hObject)
         set(handles.checkbox_exclude_value_of_first_slope,'Value',curve.elasticityParams.excludeInitial_use_stiffness);
         set(handles.e_elasticity_parameter,'Value',curve.elasticityParams.E);
         set(handles.e_radius,'Value',curve.elasticityParams.radius);
+        handles.model = curve.elasticityParams.model;
+        set(handles.(['radio_' handles.model]), 'Value', 1);
         handles.radius = curve.elasticityParams.radius;
         elasticityParams = curve.elasticityParams;
     else
@@ -395,7 +410,8 @@ function calculateForceIndentation(hObject)
         elasticityParams.xShiftCP_use_stiffness = handles.xShiftCP_use_stiffness;
         elasticityParams.excludeInitial = handles.excludeInitial;
         elasticityParams.excludeInitial_use_stiffness = handles.excludeInitial_use_stiffness;
-        elasticityParams.radius = handles.radius;      
+        elasticityParams.radius = handles.radius;   
+        elasticityParams.model = handles.model;
     end
     %calculate contact point position
         Min = calculateCPposition(hObject, elasticityParams.xShiftCP);
