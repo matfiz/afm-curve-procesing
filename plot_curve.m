@@ -25,7 +25,7 @@ function plot_curve(hObject,handles)
             pcol(1)='r';
             pcol(2)='b';
             
-            if isempty(curve.dataSeriesTime)
+            if curve.pauseLength == 0
                 legend_fd_text = {'approach', 'retract'};
             else    
                 legend_fd_text = {'approach', 'pause', 'retract'};

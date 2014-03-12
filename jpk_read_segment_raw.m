@@ -2,6 +2,11 @@ function [height dfl]=jpk_read_segment_raw(folder,segmentNumber,segmentLength)
     %read calibration parameters
         %height calibration
         calibration_file = fullfile(folder,'shared-data','header.properties');
+        if fopen(calibration_file) == -1
+           calibration_file = fullfile(folder,'../../','shared-data','header.properties'); 
+        else
+            fclose(calibration_file)
+        end
         HchannelName = jpk_read_param(calibration_file,'lcd-info.0.channel.name');
         HoffsetV = str2num(jpk_read_param(calibration_file,'lcd-info.0.encoder.scaling.offset'));
         HmultiplayerV = str2num(jpk_read_param(calibration_file,'lcd-info.0.encoder.scaling.multiplier'));

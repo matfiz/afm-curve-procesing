@@ -22,7 +22,7 @@ function varargout = cps_elasticity_panel(varargin)
 
 % Edit the above text to modify the response to help cps_elasticity_panel
 
-% Last Modified by GUIDE v2.5 03-Mar-2014 13:28:58
+% Last Modified by GUIDE v2.5 11-Mar-2014 12:55:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -403,7 +403,7 @@ function calculateForceIndentation(hObject)
         set(handles.checkbox_exclude_value_of_first_slope,'Value',curve.elasticityParams.excludeInitial_use_stiffness);
         elasticityParams.excludeInitial_use_stiffness = curve.elasticityParams.excludeInitial_use_stiffness;
         set(handles.e_elasticity_parameter,'String',curve.elasticityParams.E);
-        set(handles.e_radius,'String',curve.elasticityParams.radius*10^6);
+        set(handles.e_radius,'String',curve.elasticityParams.radius*10^9);
         handles.model = curve.elasticityParams.model;
         set(handles.(['radio_' handles.model]), 'Value', 1);
         handles.radius = curve.elasticityParams.radius;
@@ -539,7 +539,7 @@ function fitModel(hObject)
           yFit=FunctionFungHyperelastic([radius nu], [param(1) param(2)], aData);
           %yFit=FunctionFungHyperelastic([radius nu], [-300 0.1], data_full(1,:));
           El=param(1);
-          disp(param);
+          elasticityParams.b = param(2);
     end
     try
         delete(handles.plot_model);
@@ -557,4 +557,3 @@ function fitModel(hObject)
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
-

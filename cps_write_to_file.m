@@ -22,7 +22,7 @@ function varargout = cps_write_to_file(varargin)
 
 % Edit the above text to modify the response to help cps_write_to_file
 
-% Last Modified by GUIDE v2.5 11-Mar-2014 10:51:14
+% Last Modified by GUIDE v2.5 11-Mar-2014 12:55:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -201,4 +201,3 @@ function write_elasticity(hObject)
     fclose(f);
     %save handles
     guidata(hObject, handles);
-

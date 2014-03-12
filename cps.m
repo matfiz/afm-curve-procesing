@@ -143,14 +143,19 @@ end
 if (FileName1)
     h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
     handles.current_dir = PathName;
-    curve_info = ['Single curve loaded: ' FileName1];
-    set(handles.curve_info,'String',curve_info);
-    set(handles.curve_info,'Visible','On');
-    handles.current_curve_index = 1;
-    handles.curves(1) = parse_curve(PathName,FileName1,FilterIndex);
-    handles.current_curve = handles.curves(handles.current_curve_index);
-    read_to_gui(hObject,handles,1);
-    handles.no_of_curves = 1;
+    if FilterIndex == 4 % jpk-force-map
+        guidata(hObject, handles);
+        parse_jpk_force_map(hObject, PathName, FileName1);
+    else
+        curve_info = ['Single curve loaded: ' FileName1];
+        set(handles.curve_info,'String',curve_info);
+        set(handles.curve_info,'Visible','On');
+        handles.current_curve_index = 1;
+        handles.curves(1) = parse_curve(PathName,FileName1,FilterIndex);
+        handles.current_curve = handles.curves(handles.current_curve_index);
+        read_to_gui(hObject,handles,1);
+        handles.no_of_curves = 1;
+    end
     close(h);
 end
 guidata(hObject, handles);
@@ -724,6 +729,8 @@ catch
 end
 try
  delete(handles.fileOutput);
+ panels = findobj('tag','cps_write_to_file_output');
+ delete(panels);
 catch
  disp('File output panel inactive');
 end

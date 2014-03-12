@@ -4,8 +4,6 @@ function force=FunctionFungHyperelastic(c, p, a)% Implicit function: sphere in S
 El=p(1);%elasticity parameter
 hyp=p(2);%hyperelastic parameter
 
-disp(p(2));
-
 R=c(1); %radius
 nu=c(2); %poisson ratio
 
