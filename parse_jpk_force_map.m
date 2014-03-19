@@ -2,15 +2,15 @@ function parse_jpk_force_map(hObject, pathname,fname)
     handles = guidata(hObject);
     try
         %unpack map to tmp folder
-        mkdir('./tmp','map');
-        t = unzip(fullfile(pathname,fname),'./tmp/map');
-        folder = './tmp/map';
+        mkdir(fullfile(pwd,'./tmp'),'map');
+        t = unzip(fullfile(pathname,fname),fullfile(pwd,'./tmp/map/'));
+        folder = fullfile(pwd,'tmp/map');
         %read number of curves
         no_of_curves = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-map.indexes.max'))
         handles.no_of_curves = no_of_curves;
         for i=1:no_of_curves+1
             disp(['curve ' num2str(i)]);
-            handles.curves(i) = parse_jpk_force_map_curve(fullfile(pathname,'index',num2str(i-1)),i-1);
+            handles.curves(i) = parse_jpk_force_map_curve(fullfile(folder,'index',num2str(i-1)),i-1);
             file_names{i} = ['Curve ' num2str(i)];
         end
         handles.current_curve_index = 1;

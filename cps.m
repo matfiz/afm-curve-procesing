@@ -146,6 +146,9 @@ if (FileName1)
     if FilterIndex == 4 % jpk-force-map
         guidata(hObject, handles);
         parse_jpk_force_map(hObject, PathName, FileName1);
+        handles = guidata(hObject);
+        handles.current_curve_index = 1;
+        handles.current_curve = handles.curves(1);
     else
         curve_info = ['Single curve loaded: ' FileName1];
         set(handles.curve_info,'String',curve_info);
