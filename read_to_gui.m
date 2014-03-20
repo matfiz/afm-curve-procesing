@@ -13,8 +13,8 @@ function read_to_gui(hObject,handles,curve_index)
         for i=1:w
            axes(handles.axes_force_distance);
            hold on;
-           z1=handles.current_steps(i,1)
-           F1=handles.current_steps(i,2)
+           z1=handles.current_steps(i,1);
+           F1=handles.current_steps(i,2);
            z2=handles.current_steps(i,3);
            F2=handles.current_steps(i,4);
            plot(z1,F1,'gx',z2,F2,'gx','MarkerSize',13,'LineWidth',2);

@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 09-Mar-2014 09:19:28
+% Last Modified by GUIDE v2.5 20-Mar-2014 21:09:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -569,8 +569,8 @@ function b_get_step_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % Loop, picking up the points.
-set(handles.status_bar,'Visible','On')
-set(handles.status_bar,'String','Left click on the first point of the step, right click on the second one.')
+set(handles.status_bar,'Visible','On');
+set(handles.status_bar,'String','Left click on the first point of the step, right click on the second one.');
 but = 1;
 z1=0;
 F1=0;
@@ -596,7 +596,7 @@ curve = Curve;
 curve = handles.curves(handles.current_curve_index);
 curve.dataSteps = handles.current_steps;
 handles.curves(handles.current_curve_index) = curve;
-%SetDataSteps(handles.curves(handles.current_curve_index), handles.current_steps);
+handles.current_curve = curve;
 set(handles.b_delete_last_step,'Enable','On');
 guidata(hObject, handles);
 
@@ -671,12 +671,13 @@ function export_steps_txt_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-all_step_data = [];
+header = {'File name', 'z1 [m]', 'F1 [N]', 'z2 [m]', 'F2 [N]', 'dz [m]', 'dF [N]'};
+all_step_data = header;
 for i=1:handles.no_of_curves
     data_length = size(handles.curves(i).dataSteps);
     for j=1:data_length(1)
-        row = [i, handles.curves(i).dataSteps(j,:)];
-        all_step_data = [all_step_data; row];
+        row = [handles.curves(i).name, num2cell(handles.curves(i).dataSteps(j,:))];
+        all_step_data(end+1,:) = row;
     end
 end
 [filename, pathname,filterindex] = uiputfile('*.xls', 'Save step data to Excel');
@@ -951,5 +952,3 @@ function toggle_stress_relaxation_OffCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.relaxationPanel);
 guidata(hObject, handles);
-
-
