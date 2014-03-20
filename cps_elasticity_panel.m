@@ -62,7 +62,7 @@ handles.xShiftCP = 0.0;
 handles.xShiftCP_use_stiffness = false;
 handles.excludeInitial = 0.0;
 handles.excludeInitial_use_stiffness = false;
-handles.model = 'sneddon_sphere';
+handles.model = 'hertz_sphere';
 handles.excludeInitial = 0.0;
 
 
@@ -79,9 +79,9 @@ if ~isempty(cpsInput)
 end
 
 %open file output
-handles.fileOutput = cps_write_to_file('cps',handles.cps);
-set(handles.fileOutput, 'Name', 'Elasticity file output');
-
+handles.fileOutputElasticity = cps_write_to_file('cps',handles.cps);
+set(handles.fileOutputElasticity, 'Name', 'Elasticity file output');
+set(handles.fileOutputElasticity, 'Tag', 'elasticity_file_output');
 % Update handles structure
 guidata(hObject, handles);
 %draw force-indentation and fit
@@ -226,8 +226,8 @@ end
 function b_write_to_file_Callback(hObject, eventdata, handles)
     handles = guidata(hObject);
     cps_handles = guidata(handles.cps);
-    fileOutput_handles = guidata(handles.fileOutput);
-    fileOutput_handles.write_elasticity(handles.fileOutput);
+    fileOutput_handles = guidata(handles.fileOutputElasticity);
+    fileOutput_handles.write_elasticity(handles.fileOutputElasticity);
 
 function e_exclude_Callback(hObject, eventdata, handles)
 % hObject    handle to e_exclude (see GCBO)
@@ -337,7 +337,7 @@ guidata(handles.cps,cps_handles);
 % --- Executes when user attempts to close elasticity.
 function elasticity_CloseRequestFcn(hObject, eventdata, handles)
 %panel can be closed only from CPS
-delete(handles.fileOutput);
+delete(handles.fileOutputElasticity);
 
 % --- Executes on button press in b_update.
 function b_update_Callback(hObject, eventdata, handles)

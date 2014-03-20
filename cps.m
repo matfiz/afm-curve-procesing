@@ -726,13 +726,15 @@ catch
  disp('Stiffness panel inactive');
 end
 try
+ elasticity_handles = guidata(handles.elasticityPanel);
+ delete(elasticity_handles.fileOutputElasticity);
  delete(handles.elasticityPanel);
 catch
  disp('Elasticity panel inactive.');
 end
 try
  delete(handles.fileOutput);
- panels = findobj('tag','cps_write_to_file_output');
+ panels = findobj('Tag','elasticity_file_output');
  delete(panels);
 catch
  disp('File output panel inactive');

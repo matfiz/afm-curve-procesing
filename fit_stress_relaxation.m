@@ -12,7 +12,7 @@ switch curve.mode
         end
     case 'constant-force'
         if strcmpi(get(get(handles.uipanel_curve_type,'SelectedObject'),'Tag'),'radio_distance_time')
-            [CreepFit, parameters] = fit_creep_compliance_params(curve);
+            [StressRelaxationFit, parameters] = fit_creep_compliance_params(curve);
             time_pause=curve.distance_time_pause;
         end
 end
@@ -27,7 +27,7 @@ if exist('parameters')
        delete(handles.current_stress_relaxation_plot);
     catch err
     end
-    wykres = plot(CreepFit);
+    wykres = plot(StressRelaxationFit);
     set(wykres,'LineWidth',2,'LineStyle','-.','Color',[.2 .8 0]);
     axis auto;
     hold off;

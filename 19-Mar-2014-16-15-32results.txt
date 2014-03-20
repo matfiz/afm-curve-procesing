@@ -1,0 +1,1 @@
+Curve name	Model	Radius [nm]	E [Pa]	b	Skip initial [nm]	Shift CP [nm]	CP position [nm]

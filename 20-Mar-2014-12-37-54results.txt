@@ -1,0 +1,2 @@
+Curve name	Model	Radius [nm]	E [Pa]	b	Skip initial [nm]	Shift CP [nm]	CP position [nm]
+jpk.txt	fung_hyperelastic	2500.000000	188.763581	15.859371	0.000000	0.000000	18817.267000

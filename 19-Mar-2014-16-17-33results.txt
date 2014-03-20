@@ -1,0 +1,2 @@
+Curve name	Model	Radius [nm]	E [Pa]	b	Skip initial [nm]	Shift CP [nm]	CP position [nm]
+jpk.txt	hertz_sphere	2500.000000	520.325370	0.000000	0.000000	0.000000	18722.025000
