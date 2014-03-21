@@ -65,9 +65,18 @@ function curve=parse_jpk_force_map_curve(pathname,cNumber)
             curve.dataSeriesTime = [linspace(0,curve.extendTime,curve.extendLength) linspace(curve.extendTime,curve.extendTime+curve.extendPauseTime,curve.pauseLength) linspace(curve.extendTime+curve.extendPauseTime,curve.extendTime+curve.extendPauseTime+curve.retractTime,curve.retractLength)]';
             curve.dataSegmentTime = [linspace(0,curve.extendTime,curve.extendLength) linspace(0,curve.extendPauseTime,curve.pauseLength) linspace(0,curve.retractTime,curve.retractLength)]';
             curve.pauseLength = length(hPause);
-            curve.StressRelaxationFitLength = curve.pauseLength/2;
-            [stress_fit, params] = fit_stress_relaxation_params(curve);
-            curve.dataStressRelaxation = params;
+            
+            %fit stress relaxation
+            if ~isempty(curve.dataSeriesTime)
+                curve.StressRelaxationFitLength = floor(curve.pauseLength*0.75);
+                switch curve.mode
+                    case 'constant-height'
+                            [StressRelaxationFit, parameters] = fit_stress_relaxation_params(curve);
+                    case 'constant-force'
+                            [StressRelaxationFit, parameters] = fit_creep_compliance_params(curve);
+                end
+                curve.dataStressRelaxation = parameters;
+            end
         end
         
         
