@@ -1,7 +1,7 @@
 function curve=parse_curve_jpk_ascii(pathname,fname)
     curve = Curve;
     try
-        tfile = fopen([pathname fname],'r');
+        tfile = fopen(fullfile(pathname,fname),'r');
         Output_array = textscan(tfile, '%f %f %f %f %f %f', 'CommentStyle', '#');
         curve.dataHeight = Output_array{1};
         curve.dataDeflection = Output_array{2};
@@ -10,7 +10,7 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         curve.dataSeriesTime = Output_array{5};
         curve.dataSegmentTime = Output_array{1};
         fclose(tfile);
-        tfile = fopen([pathname fname],'r');
+        tfile = fopen(fullfile(pathname,fname),'r');
         file_content_array = textscan(tfile,'%s','delimiter', '\n', 'whitespace', '');
         lines = file_content_array{1};
         fclose(tfile);
@@ -27,6 +27,12 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         IndexC = strfind(lines, 'force-settings.z-start-pause-option.type:');
         Index = find(~cellfun('isempty', IndexC), 1);
         curve.mode =  sscanf(lines{Index},'# force-settings.z-start-pause-option.type: %s');
+        %tutaj chyba jakiœ b³¹d?
+        if curve.mode == 'constant-height'
+            curve.mode = 'constant-force'
+        else
+            curve.mode == 'constant-height'
+        end
         %closed loop
         IndexC = strfind(lines, 'force-settings.closed-loop:');
         Index = find(~cellfun('isempty', IndexC), 1);
@@ -74,9 +80,18 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         Index = find(~cellfun('isempty', IndexC), 1);
         [curve.units] =  sscanf(lines{Index},'# units: %c %c %c %c %c %c');
         %stress relaxation
-        curve.StressRelaxationFitLength = curve.pauseLength/2;
-        [stress_fit, params] = fit_stress_relaxation_params(curve);
-        curve.dataStressRelaxation = params;
+        %fit stress relaxation
+        if ~isempty(curve.dataSeriesTime)
+            curve.StressRelaxationFitLength = floor(curve.pauseLength*0.75);
+            switch curve.mode
+                case 'constant-height'
+                        [StressRelaxationFit, parameters] = fit_stress_relaxation_params(curve);
+                        curve.dataStressRelaxation = parameters;
+                case 'constant-force'
+                        [StressRelaxationFit, parameters] = fit_creep_compliance_params(curve);
+                        curve.dataStressRelaxation = parameters;
+            end
+        end
 
     catch err
         ws=['File ' fname ' not found or in bad format'];
