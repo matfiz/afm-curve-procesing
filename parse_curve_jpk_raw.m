@@ -8,7 +8,7 @@ function curve=parse_curve_jpk_raw(pathname,fname)
         %read number of segments
         numberOfSegments = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.force-segments.count'));
         %if pause before measurement (pause-retract) present, remove it
-        if numberOfSegments == 4
+        if numberOfSegments >= 4
             firstSegmentType = jpk_read_param(fullfile(folder, 'segments','0','segment-header.properties'),'force-segment-header.name.name');
             if strcmpi(firstSegmentType,'pause-spm')
                 %remove segment 0 and rename the others

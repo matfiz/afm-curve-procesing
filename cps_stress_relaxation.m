@@ -22,7 +22,7 @@ function varargout = cps_stress_relaxation(varargin)
 
 % Edit the above text to modify the response to help cps_stress_relaxation
 
-% Last Modified by GUIDE v2.5 10-Mar-2014 13:01:08
+% Last Modified by GUIDE v2.5 23-Mar-2014 06:17:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -253,3 +253,33 @@ if (strcmpi(curve.mode,'constant-height') || strcmpi(curve.mode,'constant-force'
 end
 %save relaxation handles
 guidata(hObject, handles);
+
+
+% --- Executes on button press in b_export_curve.
+function b_export_curve_Callback(hObject, eventdata, handles)
+% hObject    handle to b_export_curve (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%read
+handles = guidata(hObject);
+cps = handles.cps;
+cpsHandles = guidata(cps);
+%get selection
+if get(handles.radio_force_time,'Value') == 1
+    type = 'force_time';
+else
+    type = 'distance_time';
+end
+switch type
+    case 'force_time'
+        time_pause=cpsHandles.current_curve.force_time_pause;
+    case 'distance_time'
+        time_pause=cpsHandles.current_curve.distance_time_pause;
+end
+[filename, pathname,filterindex] = uiputfile('*.xls', 'Save pause segment to ASCII');
+h = waitbar(0,'Please wait! Saving ...','WindowStyle','modal') ;
+output = {'% Type: ',type};
+output(end+1,:) = {'Time [s]', 'Force [N]/Distance [m]'};
+output(end+1:length(time_pause)+end,:) = num2cell(time_pause');
+xlswrite(fullfile(pathname,filename),output);
+close(h);
