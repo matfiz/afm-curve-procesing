@@ -141,7 +141,7 @@ if  ~handles.save
          return;
     end
 end
-[FileName1,PathName,FilterIndex] = uigetfile(OpenFileFilter,'Choose curve to open');
+[FileName1,PathName,FilterIndex] = uigetfile(OpenFileFilter,'Choose curve to open',fullfile(handles.current_dir,'\'));
 if (FileName1)
     h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
     handles.current_dir = PathName;
@@ -226,6 +226,50 @@ set(handles.curve_list,'Visible','On');
  close(h);
 guidata(hObject, handles);
 
+% --------------------------------------------------------------------
+function save_data_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to save_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+button = questdlg('Save it?','The processed curves are not saved','Yes','No','Cancel','Yes');
+    if strcmp(button,'Yes')
+        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file',fullfile(handles.current_dir,'processed.mat'));
+        krzywe=handles.curves;
+        save([pathname filename],'krzywe');
+        handles.save=1;    
+    end   
+    if strcmp(button,'Cancel')
+         return;
+    end
+guidata(hObject, handles);
+
+% --------------------------------------------------------------------
+function OpenSavedCurves_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to OpenSavedCurves (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename, pathname] = uigetfile('*.mat','Select the file with curves to load',fullfile(handles.current_dir,'\'));
+h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
+load([pathname filename]);
+handles.curves = krzywe;
+[no_of_curves len] = size(krzywe);
+%curve_info = [no_of_curves 'curves loaded'];
+%set(handles.curve_info,'String',curve_info);
+%set(handles.curve_info,'Visible','On');
+handles.no_of_curves = numel(krzywe);
+handles.current_curve_index = 1;
+handles.current_curve = handles.curves(handles.current_curve_index);
+handles.current_steps = handles.current_curve.dataSteps;
+read_to_gui(hObject,handles,1);
+set(handles.axes_force_distance,'Visible','On');
+ handles.save = 0;
+ %set(handles.curve_list,'String', file_names);
+ set(handles.previous_button,'Visible','On');
+set(handles.next_button,'Visible','On');
+set(handles.curve_list,'Visible','On');
+handles.current_dir = [pathname];
+close(h);
+guidata(hObject, handles);
 
 % --------------------------------------------------------------------
 function Untitled_4_Callback(hObject, eventdata, handles)
@@ -617,53 +661,6 @@ steps = handles.current_steps(1:wierszy-1,:);
 handles.current_steps = steps;
 set(handles.adhesion_table,'Data',handles.current_steps(:,5:6));
 set(handles.b_delete_last_step,'Enable','Off');
-guidata(hObject, handles);
-
-
-% --------------------------------------------------------------------
-function save_data_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to save_data (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-button = questdlg('Save it?','The processed curves are not saved','Yes','No','Cancel','Yes');
-    if strcmp(button,'Yes')
-        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file');
-        krzywe=handles.curves;
-        save([pathname filename],'krzywe');
-        handles.save=1;    
-    end   
-    if strcmp(button,'Cancel')
-         return;
-    end
-
-
-% --------------------------------------------------------------------
-function OpenSavedCurves_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to OpenSavedCurves (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile('*.mat','Select the file with curves to load');
-h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
-load([pathname filename]);
-handles.curves = krzywe;
-[no_of_curves len] = size(krzywe);
-%curve_info = [no_of_curves 'curves loaded'];
-%set(handles.curve_info,'String',curve_info);
-%set(handles.curve_info,'Visible','On');
-handles.no_of_curves = numel(krzywe);
-handles.current_curve_index = 1;
-handles.current_curve = handles.curves(handles.current_curve_index);
-handles.current_steps = handles.current_curve.dataSteps;
-read_to_gui(hObject,handles,1);
-set(handles.axes_force_time,'Visible','On');
-set(handles.axes_force_distance,'Visible','On');
- handles.save = 0;
- %set(handles.curve_list,'String', file_names);
- set(handles.previous_button,'Visible','On');
-set(handles.next_button,'Visible','On');
-set(handles.curve_list,'Visible','On');
-handles.current_dir = [pathname];
-close(h);
 guidata(hObject, handles);
 
 
