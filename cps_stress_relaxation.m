@@ -160,7 +160,7 @@ function b_export_relaxation_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 cps = handles.cps;
 cpsHandles = guidata(cps);
-[filename, pathname,filterindex] = uiputfile('*.xls', 'Save relaxation and creep to Excel');
+[filename, pathname,filterindex] = uiputfile('*.xls', 'Save relaxation and creep to Excel',fullfile(cpsHandles.current_dir,'\'));
 h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
 output = {'#Curve name','mode', 'a0','a1','a2','tau1 lub x1','tau2 lub x2'};
 for i=1:cpsHandles.no_of_curves
