@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 20-Mar-2014 21:09:58
+% Last Modified by GUIDE v2.5 24-Mar-2014 10:45:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,6 +64,8 @@ handles.curveParameters = cps_curve_parameters('cps',hObject);
 
 handles.save = 1; %is 0, if opened curves were not saved
 handles.view_mode = 1;
+handles.stress_fit_length = 75;
+handles.current_dir = pwd;
 %1 - approach&retract
 %2 - approach only
 %3 - retract only
@@ -130,7 +132,7 @@ function LoadSingleCurveMenu_Callback(hObject, eventdata, handles)
 if  ~handles.save
     button = questdlg('Save opened curves?','File not saved','Yes','No','Cancel','Yes');
     if strcmp(button,'Yes')
-        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file');
+        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file',fullfile(handles.current_dir,'processed.mat'));
         krzywe=handles.curves;
         save(fullfile(pathname,filename),'krzywe');
         handles.save=1;    
@@ -154,7 +156,7 @@ if (FileName1)
         set(handles.curve_info,'String',curve_info);
         set(handles.curve_info,'Visible','On');
         handles.current_curve_index = 1;
-        handles.curves(1) = parse_curve(PathName,FileName1,FilterIndex);
+        handles.curves(1) = parse_curve(hObject,PathName,FileName1,FilterIndex);
         handles.current_curve = handles.curves(handles.current_curve_index);
         read_to_gui(hObject,handles,1);
         handles.no_of_curves = 1;
@@ -172,7 +174,7 @@ function LoadDirectoryMenu_Callback(hObject, eventdata, handles)
 if  ~handles.save
     button = questdlg('File not saved','Save opened curves?','Yes','No','Cancel','Yes');
     if strcmp(button,'Yes')
-        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file');
+        [filename, pathname,filterindex] = uiputfile('*.mat', 'Save curves to MAT file',fullfile(handles.current_dir,'processed.mat'));
         krzywe=handles.curves;
         save([pathname filename],'krzywe');
         handles.save=1;    
@@ -209,7 +211,7 @@ handles.no_of_curves = handles.no_of_curves(1);
  h = waitbar(0,'Please wait! Loading ...','WindowStyle','modal') ;
   for i=1:handles.no_of_curves
       disp(['\' files(i).name]);
-      handles.curves(i) = parse_curve(PathName,['\' files(i).name],FilterIndex);
+      handles.curves(i) = parse_curve(hObject, PathName,['\' files(i).name],FilterIndex);
       waitbar(i/handles.no_of_curves);
       file_names{i} = files(i).name;
   end
@@ -952,3 +954,32 @@ function toggle_stress_relaxation_OffCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.relaxationPanel);
 guidata(hObject, handles);
+
+
+% --------------------------------------------------------------------
+function OptionsMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to OptionsMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function StressFitLength_Callback(hObject, eventdata, handles)
+% hObject    handle to StressFitLength (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+prompt = {'Set stress relaxation model fit length (0-100%):'};
+dlg_title = 'Default fit length';
+num_lines = 1;
+def = {num2str(handles.stress_fit_length)};
+lengthOK = false;
+while ~lengthOK
+    newLength = str2num(str2mat(inputdlg(prompt,dlg_title,num_lines,def,'on')));
+    if newLength >= 0 && newLength <=100
+        lengthOK = true;
+    end
+end
+handles.stress_fit_length = newLength;
+guidata(hObject, handles);
+
+    

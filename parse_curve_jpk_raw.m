@@ -1,5 +1,6 @@
-function curve=parse_curve_jpk_raw(pathname,fname)
+function curve=parse_curve_jpk_raw(hObject,pathname,fname)
     curve = Curve;
+    handles = guidata(hObject);
     try
         %unpack curve to tmp folder
         mkdir('./tmp','curve');
@@ -76,7 +77,7 @@ function curve=parse_curve_jpk_raw(pathname,fname)
         end
         %fit stress relaxation
         if ~isempty(curve.dataSeriesTime)
-            curve.StressRelaxationFitLength = floor(curve.pauseLength*0.75);
+            curve.StressRelaxationFitLength = floor(curve.pauseLength*handles.stress_fit_length/100);
             switch curve.mode
                 case 'constant-height'
                         [StressRelaxationFit, parameters] = fit_stress_relaxation_params(curve);

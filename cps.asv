@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 09-Mar-2014 09:19:28
+% Last Modified by GUIDE v2.5 24-Mar-2014 10:45:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,6 +64,7 @@ handles.curveParameters = cps_curve_parameters('cps',hObject);
 
 handles.save = 1; %is 0, if opened curves were not saved
 handles.view_mode = 1;
+handles.stress_fit_length = 75;
 %1 - approach&retract
 %2 - approach only
 %3 - retract only
@@ -666,18 +667,18 @@ guidata(hObject, handles);
 
 
 % --- Executes on button press in export_steps_txt.
-function export_steps_xls_Callback(hObject, eventdata, handles)
+function export_steps_txt_Callback(hObject, eventdata, handles)
 % hObject    handle to export_steps_txt (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-all_step_data = [];
-header = 
+header = {'File name', 'z1 [m]', 'F1 [N]', 'z2 [m]', 'F2 [N]', 'dz [m]', 'dF [N]'};
+all_step_data = header;
 for i=1:handles.no_of_curves
     data_length = size(handles.curves(i).dataSteps);
     for j=1:data_length(1)
-        row = [i, handles.curves(i).dataSteps(j,:)];
-        all_step_data = [all_step_data; row];
+        row = [handles.curves(i).name, num2cell(handles.curves(i).dataSteps(j,:))];
+        all_step_data(end+1,:) = row;
     end
 end
 [filename, pathname,filterindex] = uiputfile('*.xls', 'Save step data to Excel');
@@ -954,3 +955,31 @@ delete(handles.relaxationPanel);
 guidata(hObject, handles);
 
 
+% --------------------------------------------------------------------
+function OptionsMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to OptionsMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function StressFitLength_Callback(hObject, eventdata, handles)
+% hObject    handle to StressFitLength (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+prompt = {'Enter fit length (0-100%):'};
+dlg_title = 'Set stress relaxation model fit length';
+num_lines = 1;
+def = num2str(handles.stress_fit_length);
+newLength = inputdlg(prompt,dlg_title,num_lines,def);
+lengthOK = false;
+while ~lengthOK
+    newLength = inputdlg(prompt,dlg_title,num_lines,def);
+    if newLength >= 0 && newLength <=100
+        lengthOK = true;
+    end
+end
+handles.stress_fit_length = newLength;
+guidata(hObject, handles);
+
+    

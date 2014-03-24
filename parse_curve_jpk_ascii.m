@@ -1,5 +1,6 @@
-function curve=parse_curve_jpk_ascii(pathname,fname)
+function curve=parse_curve_jpk_ascii(hObject,pathname,fname)
     curve = Curve;
+    handles = guidata(hObject);
     try
         tfile = fopen(fullfile(pathname,fname),'r');
         Output_array = textscan(tfile, '%f %f %f %f %f %f', 'CommentStyle', '#');
@@ -29,9 +30,9 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         curve.mode =  sscanf(lines{Index},'# force-settings.z-start-pause-option.type: %s');
         %tutaj chyba jakiœ b³¹d?
         if curve.mode == 'constant-height'
-            curve.mode = 'constant-force'
+            curve.mode = 'constant-force';
         else
-            curve.mode == 'constant-height'
+            curve.mode == 'constant-height';
         end
         %closed loop
         IndexC = strfind(lines, 'force-settings.closed-loop:');
@@ -82,7 +83,7 @@ function curve=parse_curve_jpk_ascii(pathname,fname)
         %stress relaxation
         %fit stress relaxation
         if ~isempty(curve.dataSeriesTime)
-            curve.StressRelaxationFitLength = floor(curve.pauseLength*0.75);
+            curve.StressRelaxationFitLength = floor(curve.pauseLength*handles.stress_fit_length/100);
             switch curve.mode
                 case 'constant-height'
                         [StressRelaxationFit, parameters] = fit_stress_relaxation_params(curve);
