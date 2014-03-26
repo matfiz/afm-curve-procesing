@@ -1,7 +1,7 @@
 function param=FitFunctionFungHyperelastic(const, xData, yData)
     R=const(1); %radius
     nu=const(2); %poisson ratio    
-    params0 = [150 0.1];
+    params0 = [150 0.1 0];
     aData = FunctionFungHyperelasticIndentation(R, xData);
     %fitowanie po linearyzacji
     %if aData(1) == 0
@@ -24,6 +24,7 @@ function param=FitFunctionFungHyperelastic(const, xData, yData)
     fitParams = nlinfit(aData,yData,func,params0,opt);
     El = fitParams(1);
     b = fitParams(2);
-    param = [El, b];
+    y0 = fitParams(3);
+    param = [El, b, y0];
 end % close the function
 %---------------------------------------------------------------------------------------

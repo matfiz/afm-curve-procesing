@@ -22,7 +22,7 @@ function varargout = cps_elasticity_panel(varargin)
 
 % Edit the above text to modify the response to help cps_elasticity_panel
 
-% Last Modified by GUIDE v2.5 11-Mar-2014 12:55:45
+% Last Modified by GUIDE v2.5 26-Mar-2014 12:02:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -536,10 +536,11 @@ function fitModel(hObject)
         case 'fung_hyperelastic'
           param=FitFunctionFungHyperelastic([radius nu], xData, yData);
           aData = FunctionFungHyperelasticIndentation(radius, data_full(1,:));
-          yFit=FunctionFungHyperelastic([radius nu], [param(1) param(2)], aData);
+          yFit=FunctionFungHyperelastic([radius nu], param, aData);
           %yFit=FunctionFungHyperelastic([radius nu], [-300 0.1], data_full(1,:));
           El=param(1);
           elasticityParams.b = param(2);
+          elasticityParams.y0 = param(3);
     end
     try
         delete(handles.plot_model);
@@ -557,3 +558,37 @@ function fitModel(hObject)
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
+
+
+
+function b_export_to_excel_Callback(hObject, eventdata, handles)
+%read
+handles = guidata(hObject);
+cps = handles.cps;
+cpsHandles = guidata(cps);
+curve = cpsHandles.current_curve;
+elasticityParams = curve.elasticityParams;
+forceIndentationData = elasticityParams.force_indentation;
+radius = elasticityParams.radius;
+nu = 0.5;
+El = elasticityParams.E;
+switch elasticityParams.model
+    case 'sneddon_sphere'
+        aData = FunctionSphereSneddonIndentation(radius, forceIndentationData(1,:));
+        yFit=FunctionSphereSneddon([radius nu], [El], aData);
+    case 'hertz_sphere'
+        yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+    case 'fung_hyperelastic'
+        aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
+        yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
+end
+[filename, pathname,filterindex] = uiputfile('*.xls', 'Save force-indentation to Excel');
+h = waitbar(0,'Please wait! Saving ...','WindowStyle','modal') ;
+output = {'Model: ',elasticityParams.model, ''};
+output(end+1,:) = {'E=',elasticityParams.E, '[Pa]'};
+output(end+1,:) = {'b=',elasticityParams.b, ''};
+output(end+1,:) = {'y0=',elasticityParams.y0, '[N]'};
+output(end+1,:) = {'Indentation [m]', 'ForceExp [N]', 'ForceFit [N]'};
+output(end+1:length(forceIndentationData)+end,:) = num2cell([forceIndentationData;yFit]');
+xlswrite(fullfile(pathname,filename),output);
+close(h);
