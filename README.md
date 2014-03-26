@@ -7,6 +7,26 @@ Curve processing software for JPK and Multiprobe AFMs
 Changelog
 _________
 
+**2014-03-24**
+* eksport stress relaxation domyslnie do katalogu, z ktorego otwarto krzywe
+* poprawka przy wczytywaniu wczesniej zapisanych w programie krzywych
+* Mozliwosc ustawienia domyslengo zakresu dopasowania do stress relaxation w menu Opcje oraz zapisywanie domyslnie w katalogu, z ktorego otwarto krzywe
+
+
+**2014-03-23**
+* export pause segment to excel in ASCII
+* przy ficie stress relaxation jako parametry startowe brane te z poprzedniego dopasowania; wczytywanie krzywych .force-map, jesli obecny jest segment pause-retract (pauza przed dojechaniem)
+
+**2014-03-21**
+* automatyczne dopasowanie stress relaxation i creep compliance do calego pakietu wczytywanych krzywych (75% dlugosci segmentu pauzy)
+
+**2014-03-20**
+* eksport skoków adhezji do Excela, skonki zapamiętywane pomiędzy krzywymi
+
+
+**2014-03-12**
+* dodano wczytywanie krzywych z plików .jpk-force-map
+
 **2014-03-07 do 2014-03-11**
 * wczytywanie natywnych krzywych .jpk-force (wraz z segmentami pauzy)
 * poprawa wczytywania natywnych krzywych Multimode (ignorowanie plików z obrazkiem, jeśli jest w folderze)
