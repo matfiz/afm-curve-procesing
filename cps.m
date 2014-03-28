@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 24-Mar-2014 10:45:24
+% Last Modified by GUIDE v2.5 26-Mar-2014 14:45:49
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -65,6 +65,7 @@ handles.curveParameters = cps_curve_parameters('cps',hObject);
 handles.save = 1; %is 0, if opened curves were not saved
 handles.view_mode = 1;
 handles.stress_fit_length = 75;
+handles.chi_limit = 0.3;
 handles.current_dir = pwd;
 %1 - approach&retract
 %2 - approach only
@@ -980,3 +981,19 @@ handles.stress_fit_length = newLength;
 guidata(hObject, handles);
 
     
+
+function StiffnessChi2Limit_Callback(hObject, eventdata, handles)
+handles = guidata(hObject);
+prompt = {'Set critical Chi2 value for auto fit of first stiffness slope (0-1):'};
+dlg_title = 'Default Chi^2';
+num_lines = 1;
+def = {num2str(handles.chi_limit)};
+lengthOK = false;
+while ~lengthOK
+    newLength = str2num(str2mat(inputdlg(prompt,dlg_title,num_lines,def,'on')));
+    if newLength >= 0 && newLength <=1
+        lengthOK = true;
+    end
+end
+handles.chi_limit = newLength;
+guidata(hObject, handles);

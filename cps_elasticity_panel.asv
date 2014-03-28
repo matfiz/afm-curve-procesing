@@ -594,4 +594,4 @@ xlswrite(fullfile(pathname,filename),output);
 close(h);
 
 function calculate_height_distance(hObject)
-    %h(d) = Z(d) - Z0 + i + d
+    
