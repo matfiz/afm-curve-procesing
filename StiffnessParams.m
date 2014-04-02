@@ -1,12 +1,13 @@
 classdef StiffnessParams
     
     properties
-       numberOfSegments
+       numberOfSegments = 0
        xContactPoint
        yContactPoint
        stiffnessSegments       
        dataForce
        dataIndentation
+       dataH %distance cell membrane-probe
     end
     
     methods 
@@ -19,6 +20,11 @@ classdef StiffnessParams
          data(2,:) = obj.dataForce(1:dataLength);
         end % force_indentation()
        
+        function data = height_distance(obj)
+         dataLength = length(obj.dataIndentation);
+         data(1,:) = obj.dataIndentation(1:dataLength);
+         data(2,:) = obj.dataH(1:dataLength);
+        end % height_distance()
         
     end
     

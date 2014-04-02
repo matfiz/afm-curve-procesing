@@ -156,6 +156,7 @@ function setContactPoint(hObject, contactPoint)
     curve.stiffnessParams = params;
     curve.stiffnessParams.xContactPoint = contactPoint(1);
     curve.stiffnessParams.yContactPoint = contactPoint(2);
+    curve.stiffnessParams.numberOfSegments = 0;
     %save
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
@@ -232,17 +233,20 @@ function b_add_segment_Callback(hObject, eventdata, handles, segmentNumber)
     handles = guidata(hObject);
     cps_handles = guidata(handles.cps);
     curve = cps_handles.current_curve;
-    
+    stiffnessParams = curve.stiffnessParams;
     %check segment number
     if (~exist('segmentNumber', 'var'))
-        segmentNumber = curve.stiffnessParams.numberOfSegments;
         %increment number of segments
-        if curve.stiffnessParams.numberOfSegments > 0
-           curve.stiffnessParams.numberOfSegments = curve.stiffnessParams.numberOfSegments + 1;
+        if stiffnessParams.numberOfSegments > 0
+           stiffnessParams.numberOfSegments = stiffnessParams.numberOfSegments + 1;
         else
-           curve.stiffnessParams.numberOfSegments = 1;
+           stiffnessParams.numberOfSegments = 1;
         end
-        segmentNumber = curve.stiffnessParams.numberOfSegments;
+        segmentNumber = stiffnessParams.numberOfSegments;
+    else
+        if isempty(stiffnessParams.numberOfSegments) || (segmentNumber > stiffnessParams.numberOfSegments)
+            stiffnessParams.numberOfSegments = stiffnessParams.numberOfSegments + 1;
+        end
     end
     
     
@@ -254,7 +258,8 @@ function b_add_segment_Callback(hObject, eventdata, handles, segmentNumber)
     current_segment.slope = 0;
    
     %save variables
-    curve.stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    stiffnessParams.stiffnessSegments{segmentNumber} = current_segment;
+    curve.stiffnessParams = stiffnessParams;
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);

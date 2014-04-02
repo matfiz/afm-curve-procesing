@@ -695,7 +695,7 @@ curve_info = ['Single curve loaded: jpk.txt'];
 set(handles.curve_info,'String',curve_info);
 set(handles.curve_info,'Visible','On');
 handles.current_curve_index = 1;
-handles.curves(1) = parse_curve('./test_data/','jpk.txt',1);
+handles.curves(1) = parse_curve(hObject,'./test_data/','jpk.txt',1);
 handles.current_curve = handles.curves(handles.current_curve_index);
 read_to_gui(hObject,handles,1);
 handles.no_of_curves = 1;
