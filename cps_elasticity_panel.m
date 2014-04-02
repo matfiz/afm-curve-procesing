@@ -22,7 +22,7 @@ function varargout = cps_elasticity_panel(varargin)
 
 % Edit the above text to modify the response to help cps_elasticity_panel
 
-% Last Modified by GUIDE v2.5 26-Mar-2014 12:02:35
+% Last Modified by GUIDE v2.5 28-Mar-2014 14:50:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -394,6 +394,7 @@ function calculateForceIndentation(hObject)
     curve = cps_handles.current_curve;
     %check if elasticity params already exist
     if curve.hasElasticityFit == true
+        elasticityParams = curve.elasticityParams;
         set(handles.e_shift_cp,'String',curve.elasticityParams.xShiftCP);
         handles.xShiftCP = curve.elasticityParams.xShiftCP;
         set(handles.checkbox_use_value_of_first_slope,'Value',curve.elasticityParams.xShiftCP_use_stiffness);
@@ -407,7 +408,6 @@ function calculateForceIndentation(hObject)
         handles.model = curve.elasticityParams.model;
         set(handles.(['radio_' handles.model]), 'Value', 1);
         handles.radius = curve.elasticityParams.radius;
-        elasticityParams = curve.elasticityParams;
     else
         elasticityParams = ElasticityParams;
         elasticityParams.xShiftCP = handles.xShiftCP;
@@ -595,3 +595,38 @@ close(h);
 
 function calculate_height_distance(hObject)
     %h(d) = Z(d) - Z0 + i + d
+%read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+if curve.hasElasticityFit == true
+    elasticityParams = curve.elasticityParams;
+    stiffnessParams = curve.stiffnessParams;
+    %I search for index of contact point in Z-pos data CP taken from
+    %stiffness FI curve, ie the first CP
+    index = find(curve.dataHeightMeasured == stiffnessParams.xContactPoint);
+    %it returns to values (for approach and retrace), I take the first
+    %(approach)
+    xContactPointIndex = index(1);
+    for i=1:length(curve.stiffnessParams.dataForce),
+         indentation = FunctionValueInverseFungHyperelastic([elasticityParams.radius 0.5], [elasticityParams.E elasticityParams.b elasticityParams.y0], stiffnessParams.dataForce(i));
+         stiffnessParams.dataH(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - curve.dataHeightMeasured(xContactPointIndex) + indentation + stiffnessParams.dataForce(i)/curve.scalingFactor;
+    end
+    curve.stiffnessParams = stiffnessParams;
+    %save variables
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+else
+    disp('nie dopasowano elastycznosci!');
+end
+
+
+% --- Executes on button press in b_glycocalix.
+function b_glycocalix_Callback(hObject, eventdata, handles)
+%read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+calculate_height_distance(hObject);
+disp('jest!');
