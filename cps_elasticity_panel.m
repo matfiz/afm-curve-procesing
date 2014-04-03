@@ -22,7 +22,7 @@ function varargout = cps_elasticity_panel(varargin)
 
 % Edit the above text to modify the response to help cps_elasticity_panel
 
-% Last Modified by GUIDE v2.5 28-Mar-2014 14:50:50
+% Last Modified by GUIDE v2.5 03-Apr-2014 10:43:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -593,6 +593,61 @@ output(end+1:length(forceIndentationData)+end,:) = num2cell([forceIndentationDat
 xlswrite(fullfile(pathname,filename),output);
 close(h);
 
+% --- Executes on button press in b_export_whole_curve.
+function b_export_whole_curve_Callback(hObject, eventdata, handles)
+% hObject    handle to b_export_whole_curve (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%read
+handles = guidata(hObject);
+cps = handles.cps;
+cpsHandles = guidata(cps);
+curve = cpsHandles.current_curve;
+elasticityParams = curve.elasticityParams;
+forceIndentationData = elasticityParams.force_indentation;
+%calculate indentation in the whole range
+    dataHeight = curve.dataHeightMeasured(1:curve.extendLength);
+    dataDeflection = curve.dataDeflection(1:curve.extendLength);
+    wholeIndentation = [];
+    index = find(curve.dataHeightMeasured == elasticityParams.xContactPoint);
+    %it returns to values (for approach and retrace), I take the first
+    %(approach)
+    xContactPointIndex = index(1);
+    refSlope = curve.scalingFactor;
+    refB = dataDeflection(xContactPointIndex)-refSlope*dataHeight(xContactPointIndex);
+    for i=1:length(dataHeight)
+        %wholeIndentation(i) = dataHeight(i) - (dataDeflection(i) - refB)/refSlope; 
+        wholeIndentation(i) = dataHeight(i) - dataDeflection(i)/refSlope + dataDeflection(xContactPointIndex)/refSlope-dataHeight(xContactPointIndex);
+    end
+    dataDeflection = dataDeflection - dataDeflection(xContactPointIndex);
+    wholeIndentation = wholeIndentation';
+radius = elasticityParams.radius;
+nu = 0.5;
+El = elasticityParams.E;
+switch elasticityParams.model
+    case 'sneddon_sphere'
+        aData = FunctionSphereSneddonIndentation(radius, forceIndentationData(1,:));
+        yFit=FunctionSphereSneddon([radius nu], [El], aData);
+    case 'hertz_sphere'
+        yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+    case 'fung_hyperelastic'
+        aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
+        yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
+end
+%extend yFit to the whole range
+yFitWhole = zeros(length(dataDeflection),1);
+yFitWhole(xContactPointIndex:end) = yFit;
+[filename, pathname,filterindex] = uiputfile('*.xls', 'Save force-indentation to Excel');
+h = waitbar(0,'Please wait! Saving ...','WindowStyle','modal') ;
+output = {'Model: ',elasticityParams.model, ''};
+output(end+1,:) = {'E=',elasticityParams.E, '[Pa]'};
+output(end+1,:) = {'b=',elasticityParams.b, ''};
+output(end+1,:) = {'y0=',elasticityParams.y0, '[N]'};
+output(end+1,:) = {'Indentation [nm]', 'ForceExp [pN]', 'ForceFit [pN]'};
+output(end+1:length(wholeIndentation)+end,:) = num2cell([wholeIndentation'.*10^9;dataDeflection'.*10^12;yFitWhole'.*10^12])';
+xlswrite(fullfile(pathname,filename),output);
+close(h);
+
 function calculate_height_distance(hObject)
     %h(d) = Z(d) - Z0 + i + d
 %read data
@@ -630,3 +685,10 @@ function b_glycocalix_Callback(hObject, eventdata, handles)
     curve = cps_handles.current_curve;
 calculate_height_distance(hObject);
 disp('jest!');
+
+
+% --- Executes on button press in b_export_whole_curve.
+function b_export_whole_curve_Callback(hObject, eventdata, handles)
+% hObject    handle to b_export_whole_curve (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
