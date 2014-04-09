@@ -6,9 +6,9 @@ function parse_jpk_force_map(hObject, pathname,fname)
         t = unzip(fullfile(pathname,fname),fullfile(pwd,'./tmp/map/'));
         folder = fullfile(pwd,'tmp/map');
         %read number of curves
-        no_of_curves = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-map.indexes.max'))
+        no_of_curves = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-map.indexes.max'))+1;%because it is numbered from 0
         handles.no_of_curves = no_of_curves;
-        for i=1:no_of_curves+1
+        for i=1:no_of_curves
             disp(['curve ' num2str(i)]);
             handles.curves(i) = parse_jpk_force_map_curve(fullfile(folder,'index',num2str(i-1)),i-1);
             file_names{i} = ['Curve ' num2str(i)];
