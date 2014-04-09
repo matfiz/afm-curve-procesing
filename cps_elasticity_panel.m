@@ -22,7 +22,7 @@ function varargout = cps_elasticity_panel(varargin)
 
 % Edit the above text to modify the response to help cps_elasticity_panel
 
-% Last Modified by GUIDE v2.5 03-Apr-2014 10:43:47
+% Last Modified by GUIDE v2.5 03-Apr-2014 14:28:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -308,8 +308,8 @@ function checkbox_exclude_value_of_first_slope_Callback(hObject, eventdata, hand
     guidata(handles.cps,cps_handles);
 
     
-% --- Executes on button press in radio_sneddon_sphere.
-function radio_sneddon_sphere_Callback(hObject, eventdata, handles)
+% --- Executes on button press in radio_hertz_sphere_sokolov.
+function radio_hertz_sphere_sokolov_Callback(hObject, eventdata, handles)
 handles.model = 'sneddon_sphere';
 cps_handles = guidata(handles.cps);
 cps_handles.current_curve.elasticityParams.model = 'sneddon_sphere';
@@ -685,10 +685,3 @@ function b_glycocalix_Callback(hObject, eventdata, handles)
     curve = cps_handles.current_curve;
 calculate_height_distance(hObject);
 disp('jest!');
-
-
-% --- Executes on button press in b_export_whole_curve.
-function b_export_whole_curve_Callback(hObject, eventdata, handles)
-% hObject    handle to b_export_whole_curve (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)

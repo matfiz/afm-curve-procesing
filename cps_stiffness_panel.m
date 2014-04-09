@@ -510,6 +510,9 @@ curve = cpsHandles.current_curve;
 %get critical Chi2
 chi2Limit = cpsHandles.chi_limit;
 segmentNumber = 1;  
+% get force variance of the initial 15% of approach F-D curve
+percent_limit = 15;
+force_var = var(curve.dataDeflection(1:floor(curve.extendLength*percent_limit/100)));
 %Add Segment To Curve instance
 curve.stiffnessParams.stiffnessSegments{segmentNumber} = StiffnessSegment;
 current_segment = curve.stiffnessParams.stiffnessSegments{segmentNumber};
@@ -536,6 +539,9 @@ while current_segment.correlation <= chi2Limit
     [p,S] = polyfit(xData,yData,1);
     %chi^2
         chi2=sum((yData-p(1)*xData-p(2)).^2)/var(yData);
+        %instead of variance of yData, take variance of initial flat part
+        %of FD approach curve
+        %chi2=sum((yData-p(1)*xData-p(2)).^2)/force_var;
         DoF = abs(indexEnd-indexStart)-2;
         redChi2 = chi2/DoF;
         current_segment.correlation = redChi2;
