@@ -687,6 +687,8 @@ switch elasticityParams.model
         yFit=FunctionSphereSneddon([radius nu], [El], aData);
     case 'hertz_sphere'
         yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+    case 'sokolov_sphere'
+        yFit=FunctionSokolovForceReduced([El elasticityParams.Z0], [radius nu curve.scalingFactor], forceIndentationData(1,:));
     case 'fung_hyperelastic'
         aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
         yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
@@ -697,6 +699,7 @@ output = {'Model: ',elasticityParams.model, ''};
 output(end+1,:) = {'E=',elasticityParams.E, '[Pa]'};
 output(end+1,:) = {'b=',elasticityParams.b, ''};
 output(end+1,:) = {'y0=',elasticityParams.y0, '[N]'};
+output(end+1,:) = {'Z0=',elasticityParams.Z0*10^6, '[um]'};
 output(end+1,:) = {'Indentation [m]', 'ForceExp [N]', 'ForceFit [N]'};
 output(end+1:length(forceIndentationData)+end,:) = num2cell([forceIndentationData;yFit]');
 xlswrite(fullfile(pathname,filename),output);
@@ -742,6 +745,9 @@ switch elasticityParams.model
     case 'fung_hyperelastic'
         aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
         yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
+    otherwise
+        disp('It is not possible to export fit');
+        return
 end
 %extend yFit to the whole range
 yFitWhole = zeros(length(dataDeflection),1);
