@@ -63,12 +63,12 @@ handles.xShiftCP_use_stiffness = false;
 handles.excludeInitial = 0.0;
 handles.excludeInitial_use_stiffness = false;
 handles.model = 'hertz_sphere';
-handles.excludeInitial = 0.0;
 
 
 
 %publish functions
 handles.setEndPoint = @setEndPoint;
+handles.setStartPoint = @setStartPoint;
 
 %remeber the main window handles for later
 handles.cps = [];    
@@ -563,6 +563,27 @@ function calculateForceIndentation(hObject)
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
+    
+function setStartPoint(hObject, point)  
+    %read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    elasticityParams = curve.elasticityParams;
+    %set vars
+    elasticityParams.xStart = point(1);
+    elasticityParams.yStart = point(2);
+    elasticityParams.indexStart = point(3);
+    elasticityParams.excludeInitial = max(elasticityParams.dataIndentation) - point(1);
+    handles.excludeInitial = elasticityParams.excludeInitial*10^9;
+    set(handles.e_exclude,'String',num2str(handles.excludeInitial));
+    %save variables
+    curve.elasticityParams = elasticityParams;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    fitModel(hObject);
+    
 function setEndPoint(hObject, point)  
     %read data
     handles = guidata(hObject);
