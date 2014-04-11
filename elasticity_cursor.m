@@ -8,6 +8,7 @@ hCur(1) = line([NaN NaN], ylim(axes), ...
 %hold off;
      function clickFcn(varargin)
         % Initiate cursor if clicked anywhere but the figure
+        disp(get(gcbf, 'SelectionType'));
         if strcmpi(get(gco, 'type'), 'figure')
            set(hCur, 'XData', [NaN NaN]);                % <-- EDIT
         else
@@ -26,7 +27,13 @@ hCur(1) = line([NaN NaN], ylim(axes), ...
         handles = guidata(hObject);
         cps_handles = guidata(handles.cps);
         curve = cps_handles.current_curve;
-        approach=curve.elasticityParams.force_indentation;
+        if get(handles.radio_sokolov_sphere,'Value') == 1
+            view_range = floor(curve.extendLength*(100-cps_handles.approach_curve_view_length)/100);
+            forceDistanceDataFull = curve.force_distance_approach;
+            approach = forceDistanceDataFull(:,view_range:end);
+        else
+            approach=curve.elasticityParams.force_indentation;
+        end
         xdata = approach(1,:);
         ydata = approach(2,:);
         % Update cursor text

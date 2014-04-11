@@ -96,7 +96,8 @@ varargout{1} = handles.output;
 % --- Executes when user attempts to close cps_write_to_file_output.
 function cps_write_to_file_output_CloseRequestFcn(hObject, eventdata, handles)
 %can be closed only from CPS window
-%delete(hObject);
+delete(hObject);
+disp('ble');
 function write_stiffness(hObject)
     %read
     handles = guidata(hObject);

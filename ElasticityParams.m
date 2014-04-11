@@ -18,9 +18,9 @@ classdef ElasticityParams
        E = 0
        b = 0
        y0 = 0
+       Z0 = 0
        dataForce
        dataIndentation
-
     end
     
     methods 

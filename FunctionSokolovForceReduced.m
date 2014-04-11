@@ -1,0 +1,39 @@
+function force=FunctionSokolovForceReduced(p, c, Z)% Implicit function: sphere in Sneddon model
+R=c(1); %radius
+nu=c(2); %poisson ratio
+k = c(3); %spring constant
+
+El = p(1);
+Z0 = p(2);
+
+force=zeros(size(Z)); % define a vector to allocate the magnetization values
+NN=length(Z); % total length of the field vector x, i.e. B
+
+opt = optimset('display','none','TolFun',10^(-12),'TolX',10^(-12));
+% I out off all the messages coming from fzero. If something goes wrong, change this option to 'off' 
+% to see at which x values fzero failed.
+%warning ('off','all');
+for i=1:NN    
+   %original equation
+   A = Z0;
+   B = Z(i);
+   D = 1/k;
+   C = (9/16 * 1/El * sqrt(1/R))^(2/3);
+   force(i) = (-1/3).*D.^(-3).*(C.^3+(-3).*A.*D.^2+3.*B.*D.^2)+(-1/3).*2.^(1/3) ...
+  .*D.^(-3).*((-1).*C.^6+6.*A.*C.^3.*D.^2+(-6).*B.*C.^3.*D.^2).*(( ...
+  -2).*C.^9+18.*A.*C.^6.*D.^2+(-18).*B.*C.^6.*D.^2+(-27).*A.^2.* ...
+  C.^3.*D.^4+54.*A.*B.*C.^3.*D.^4+(-27).*B.^2.*C.^3.*D.^4+(4.*((-1) ...
+  .*C.^6+6.*A.*C.^3.*D.^2+(-6).*B.*C.^3.*D.^2).^3+((-2).*C.^9+18.* ...
+  A.*C.^6.*D.^2+(-18).*B.*C.^6.*D.^2+(-27).*A.^2.*C.^3.*D.^4+54.*A.* ...
+  B.*C.^3.*D.^4+(-27).*B.^2.*C.^3.*D.^4).^2).^(1/2)).^(-1/3)+(1/3).* ...
+  2.^(-1/3).*D.^(-3).*((-2).*C.^9+18.*A.*C.^6.*D.^2+(-18).*B.*C.^6.* ...
+  D.^2+(-27).*A.^2.*C.^3.*D.^4+54.*A.*B.*C.^3.*D.^4+(-27).*B.^2.* ...
+  C.^3.*D.^4+(4.*((-1).*C.^6+6.*A.*C.^3.*D.^2+(-6).*B.*C.^3.*D.^2) ...
+  .^3+((-2).*C.^9+18.*A.*C.^6.*D.^2+(-18).*B.*C.^6.*D.^2+(-27).* ...
+  A.^2.*C.^3.*D.^4+54.*A.*B.*C.^3.*D.^4+(-27).*B.^2.*C.^3.*D.^4).^2) ...
+  .^(1/2)).^(1/3); 
+end
+force = real(force);
+warning ('on','all');
+end % close the function
+%---------------------------------------------------------------------------------------

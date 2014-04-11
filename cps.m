@@ -66,6 +66,8 @@ handles.save = 1; %is 0, if opened curves were not saved
 handles.view_mode = 1;
 handles.stress_fit_length = 75;
 handles.chi_limit = 0.3;
+%for glycocalix
+handles.approach_curve_view_length = 40;%value in percent
 handles.current_dir = pwd;
 %1 - approach&retract
 %2 - approach only
@@ -905,6 +907,10 @@ function toggle_elasticity_panel_OffCallback(hObject, eventdata, handles)
 % hObject    handle to toggle_elasticity_panel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+try
+    eHandles = guidata(handles.elasticityPanel);
+    delete(eHandles.fileOutputElasticity);
+end
 delete(handles.elasticityPanel);
 guidata(hObject, handles);
 
@@ -950,7 +956,8 @@ function toggle_stress_relaxation_OffCallback(hObject, eventdata, handles)
 % hObject    handle to toggle_stress_relaxation (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-delete(handles.relaxationPanel);
+relaxationPanel = findobj('tag','cps_stress_relaxation');
+delete(relaxationPanel);
 guidata(hObject, handles);
 
 
