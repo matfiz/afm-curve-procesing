@@ -63,12 +63,12 @@ handles.xShiftCP_use_stiffness = false;
 handles.excludeInitial = 0.0;
 handles.excludeInitial_use_stiffness = false;
 handles.model = 'hertz_sphere';
-handles.excludeInitial = 0.0;
 
 
 
 %publish functions
 handles.setEndPoint = @setEndPoint;
+handles.setStartPoint = @setStartPoint;
 
 %remeber the main window handles for later
 handles.cps = [];    
@@ -563,6 +563,27 @@ function calculateForceIndentation(hObject)
     cps_handles.current_curve = curve;
     guidata(hObject, handles);
     guidata(handles.cps,cps_handles);
+    
+function setStartPoint(hObject, point)  
+    %read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+    elasticityParams = curve.elasticityParams;
+    %set vars
+    elasticityParams.xStart = point(1);
+    elasticityParams.yStart = point(2);
+    elasticityParams.indexStart = point(3);
+    elasticityParams.excludeInitial = max(elasticityParams.dataIndentation) - point(1);
+    handles.excludeInitial = elasticityParams.excludeInitial*10^9;
+    set(handles.e_exclude,'String',num2str(handles.excludeInitial));
+    %save variables
+    curve.elasticityParams = elasticityParams;
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+    fitModel(hObject);
+    
 function setEndPoint(hObject, point)  
     %read data
     handles = guidata(hObject);
@@ -666,6 +687,8 @@ switch elasticityParams.model
         yFit=FunctionSphereSneddon([radius nu], [El], aData);
     case 'hertz_sphere'
         yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+    case 'sokolov_sphere'
+        yFit=FunctionSokolovForceReduced([El elasticityParams.Z0], [radius nu curve.scalingFactor], forceIndentationData(1,:));
     case 'fung_hyperelastic'
         aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
         yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
@@ -676,6 +699,7 @@ output = {'Model: ',elasticityParams.model, ''};
 output(end+1,:) = {'E=',elasticityParams.E, '[Pa]'};
 output(end+1,:) = {'b=',elasticityParams.b, ''};
 output(end+1,:) = {'y0=',elasticityParams.y0, '[N]'};
+output(end+1,:) = {'Z0=',elasticityParams.Z0*10^6, '[um]'};
 output(end+1,:) = {'Indentation [m]', 'ForceExp [N]', 'ForceFit [N]'};
 output(end+1:length(forceIndentationData)+end,:) = num2cell([forceIndentationData;yFit]');
 xlswrite(fullfile(pathname,filename),output);
@@ -721,6 +745,9 @@ switch elasticityParams.model
     case 'fung_hyperelastic'
         aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
         yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
+    otherwise
+        disp('It is not possible to export fit');
+        return
 end
 %extend yFit to the whole range
 yFitWhole = zeros(length(dataDeflection),1);
@@ -764,6 +791,33 @@ else
     disp('nie dopasowano elastycznosci!');
 end
 
+function calculate_height_distance_sokolov(hObject)
+ %h(d) = Z(d) - Z0 + i + d
+%read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+try
+    elasticityParams = curve.elasticityParams;
+    %I search for index of contact point in Z-pos data CP taken from
+    %stiffness FI curve, ie the first CP
+    index = find(curve.dataHeightMeasured == stiffnessParams.xContactPoint);
+    %it returns to values (for approach and retrace), I take the first
+    %(approach)
+    xContactPointIndex = index(1);
+    for i=1:length(curve.stiffnessParams.dataForce),
+         indentation = FunctionValueInverseFungHyperelastic([elasticityParams.radius 0.5], [elasticityParams.E elasticityParams.b elasticityParams.y0], stiffnessParams.dataForce(i));
+         stiffnessParams.dataH(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - curve.dataHeightMeasured(xContactPointIndex) + indentation + stiffnessParams.dataForce(i)/curve.scalingFactor;
+    end
+    curve.stiffnessParams = stiffnessParams;
+    %save variables
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+catch
+    disp('Contact Point was not fitted!');
+end
+
 
 % --- Executes on button press in b_glycocalix.
 function b_glycocalix_Callback(hObject, eventdata, handles)
@@ -797,22 +851,24 @@ handles.Z0_label = uicontrol('Parent',handles.output,...
                     'Position',[0.78 0.885 0.05 0.03]...
                     );
 handles.Z0_value = uicontrol('Parent',handles.output,...
-                    'String','nm',...
-                    'Style','text',...
+                    'String',num2str(Z0*10^6),...
+                    'Style','edit',...
                     'FontSize',get(handles.e_elasticity_parameter,'FontSize'),...
+                    'ForegroundColor',get(handles.e_elasticity_parameter,'ForegroundColor'),...
+                    'BackgroundColor',get(handles.e_elasticity_parameter,'BackgroundColor'),...
                     'Units','normalized',...
-                    'Position',[0.925 0.885 0.05 0.03]...
+                    'Position',[0.833 0.88 0.095 0.04]...
                     );                 
 handles.Z0_unit = uicontrol('Parent',handles.output,...
-                    'String',num2str(Z0*e09,...
-                    'Style','edit',...
+                    'String','um',...
+                    'Style','text',...
                     'FontSize',get(handles.l_e,'FontSize'),...
                     'ForegroundColor',get(handles.l_e,'ForegroundColor'),...
                     'BackgroundColor',get(handles.l_e,'BackgroundColor'),...
                     'Units','normalized',...
-                    'Position',[0.925 0.885 0.05 0.03]...
+                    'Position',[0.93 0.885 0.04 0.03]...
                     );                
 set(handles.Z0_label,'Tag','Z0_info');
-set(handles.Z0_label,'Tag','Z0_value');
+set(handles.Z0_value,'Tag','Z0_info');
 set(handles.Z0_unit,'Tag','Z0_info');
 %guidata(hObject, handles);

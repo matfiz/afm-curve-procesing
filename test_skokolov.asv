@@ -1,28 +1,38 @@
 close all;
 clear all;
 clc;
-load('D:\Brzezinka\Dokumenty\doktoranckie\JPK\curve_processing\tmp\urve.mat');
-
+load('D:\Brzezinka\Dokumenty\doktoranckie\JPK\curve_processing\tmp\curve.mat');
+%h(d) = Z(d) - Z0 + i + d
 elasticityParams = curve.elasticityParams;
-    stiffnessParams = curve.stiffnessParams;
-    %I search for index of contact point in Z-pos data CP taken from
-    %stiffness FI curve, ie the first CP
-    index = find(curve.dataHeightMeasured == elasticityParams.xContactPoint);
+stiffnessParams = curve.stiffnessParams;
+    %CP fitted from the model
+    Z0 = elasticityParams.Z0;
+    El = elasticityParams.E;
+    k = curve.scalingFactor;
+    R = elasticityParams.radius;
+    %I search for index of Z0
+    data = elasticityParams.force_indentation;%assuming a wide enough range was selected
+    zData = data(1,:);
+    fData = data(2,:);
+    Min = findClosestPoint(Z0,0,zData,fData);
+    index = Min(3);
     %it returns to values (for approach and retrace), I take the first
     %(approach)
-    xContactPointIndex = index(1);
-    %how much the force was shifted
-    
-    %calculate a
-    a=FunctionFungHyperelasticIndentation(elasticityParams.radius, elasticityParams.dataIndentation);
-    force=FunctionFungHyperelastic([elasticityParams.radius 0.5], [elasticityParams.E elasticityParams.b elasticityParams.y0], a);
-    dModel = [];
-    for i=1:length(curve.stiffnessParams.dataForce),
-         indentation(i) = FunctionValueInverseFungHyperelastic([elasticityParams.radius 0.5], [elasticityParams.E elasticityParams.b elasticityParams.y0], stiffnessParams.dataForce(i));
-         stiffnessParams.dataH(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - curve.dataHeightMeasured(xContactPointIndex) + indentation(i) + stiffnessParams.dataForce(i)/curve.scalingFactor;
+    Z0Index = index(1);
+    %dMax = fData(Z0Index);
+    dMax = fData(end);
+    zDataReduced = zData(1:Z0Index);
+    fDataReduced = fData(1:Z0Index);
+    force = [];
+    for i=1:length(zDataReduced),
+         indentation(i) = (9/16 * 1/El * sqrt(1/R) * fData(i))^(2/3);
+         stiffnessParams.dataH(i) = zData(i) - Z0 + indentation(i) + fData(i)/k;
+         stiffnessParams.dataH(i) = zDataReduced(i) - ((9/16 * k/El * sqrt(1/R))^(2/3) * (dMax^(2/3)-(fDataReduced(i)/k)^(2/3)) - (dMax - fDataReduced(i)/k));
+         force(i) = k*(stiffnessParams.dataH(i)-zDataReduced(i)+Z0-indentation(i));
          %dModel(i) = 
     end
-    %plot(stiffnessParams.dataH,stiffnessParams.dataIndentation);
+    semilogy(stiffnessParams.dataH,force*10^9);
+    semilogy(stiffnessParams.dataH,fDataReduced*10^9);
     %set(gca,'YScale','log');
-    fd = curve.force_distance_approach;
-    plot(fd(1,:),fd(2,:)/curve.scalingFactor*10^9,fd(1,xContactPointIndex:end),force/curve.scalingFactor*10^9);
+    %fd = curve.force_distance_approach;
+    %plot(fd(1,:),fd(2,:)/curve.scalingFactor*10^9,fd(1,xContactPointIndex:end),force/curve.scalingFactor*10^9);

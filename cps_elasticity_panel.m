@@ -791,6 +791,36 @@ else
     disp('nie dopasowano elastycznosci!');
 end
 
+function calculate_height_distance_sokolov(hObject)
+ %h(d) = Z(d) - Z0 + i + d
+%read data
+    handles = guidata(hObject);
+    cps_handles = guidata(handles.cps);
+    curve = cps_handles.current_curve;
+try
+    elasticityParams = curve.elasticityParams;
+    %CP fitted from the model
+    Z0 = elasticityParams.Z0;
+    El = elasticityParams.E;
+    %I search for index of Z0
+    data = elasticityParams.force_indentation;%assuming a wide enough range was selected
+    index = find(data(1,:) == Z0);
+    %it returns to values (for approach and retrace), I take the first
+    %(approach)
+    Z0Index = index(1);
+    for i=1:length(data(1,:)),
+         indentation = FunctionValueInverseFungHyperelastic([elasticityParams.radius 0.5], [elasticityParams.E elasticityParams.b elasticityParams.y0], stiffnessParams.dataForce(i));
+         stiffnessParams.dataH(i) = curve.dataHeightMeasured(xContactPointIndex+i-1) - curve.dataHeightMeasured(xContactPointIndex) + indentation + stiffnessParams.dataForce(i)/curve.scalingFactor;
+    end
+    curve.stiffnessParams = stiffnessParams;
+    %save variables
+    cps_handles.current_curve = curve;
+    guidata(hObject, handles);
+    guidata(handles.cps,cps_handles);
+catch
+    disp('Contact Point was not fitted!');
+end
+
 
 % --- Executes on button press in b_glycocalix.
 function b_glycocalix_Callback(hObject, eventdata, handles)
@@ -798,8 +828,10 @@ function b_glycocalix_Callback(hObject, eventdata, handles)
     handles = guidata(hObject);
     cps_handles = guidata(handles.cps);
     curve = cps_handles.current_curve;
-calculate_height_distance(hObject);
-disp('jest!');
+%calculate_height_distance_sokolov(hObject);
+handles.brush = cps_brush_deformation('cps',handles.cps);
+guidata(hObject, handles);
+
 
 function display_Z0(hObject,Z0)
 %read data
