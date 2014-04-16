@@ -2,7 +2,9 @@ function read_to_gui(hObject,handles,curve_index)
     plot_curve(hObject,handles);
     set(handles.output, 'WindowButtonDownFcn', '');%remove the click function from select contact point 
     if ~isempty(handles.current_curve.dataSeriesTime)
-        plot_time_curve(hObject,handles);
+        if handles.current_curve.pauseLength > 0
+            plot_time_curve(hObject,handles);
+        end
     end
 
     %read adhesion steps

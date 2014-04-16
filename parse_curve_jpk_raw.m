@@ -44,6 +44,7 @@ function curve=parse_curve_jpk_raw(hObject,pathname,fname)
         if numberOfSegments == 2
             curve.extendLength = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.extend-k-length'));
             curve.retractLength = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.retract-k-length'));
+            curve.pauseLength = 0;
             [hExtend dExtend] = jpk_read_segment_raw(folder,0,curve.extendLength);
             [hRetract dRetract] = jpk_read_segment_raw(folder,1,curve.retractLength);
             %we have to correct no points to the real numbers (sometimes
@@ -76,7 +77,7 @@ function curve=parse_curve_jpk_raw(hObject,pathname,fname)
             curve.pauseLength = length(hPause);
         end
         %fit stress relaxation
-        if ~isempty(curve.dataSeriesTime)
+        if curve.pauseLength > 0
             curve.StressRelaxationFitLength = floor(curve.pauseLength*handles.stress_fit_length/100);
             switch curve.mode
                 case 'constant-height'
