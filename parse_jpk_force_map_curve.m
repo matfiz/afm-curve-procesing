@@ -8,16 +8,28 @@ function curve=parse_jpk_force_map_curve(pathname,cNumber)
         curve.name = ['Curve ' num2str(cNumber)+1];
         curve.xPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.x'));
         curve.yPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.y'));
+        %if pause before measurement (pause-retract) present, remove it
+        if numberOfSegments >= 4
+            numPoints = str2num(jpk_read_param(fullfile(folder, 'segments','0','segment-header.properties'),'force-segment-header.num-points'));
+            if numPoints < 100 %then it is the initial pause segment
+                %remove segment 0 and rename the others
+                rmdir(fullfile(pathname,'segments/0'),'s');
+                movefile(fullfile(pathname,'segments/1'),fullfile(pathname,'segments/0'));
+                movefile(fullfile(pathname,'segments/2'),fullfile(pathname,'segments/1'));
+                movefile(fullfile(pathname,'segments/3'),fullfile(pathname,'segments/2'));
+            end
+        end
+        
         %read mode of 2nd segment (pause)
         try
-        mode = jpk_read_param(fullfile(folder, 'segments','1','segment-header.properties'),'force-segment-header.settings.segment-settings.type');
+        mode = jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.force-settings.z-end-pause-option.type');
         catch
             mode = '';
         end
         switch mode 
-            case 'constant-force-pause'
+            case 'constant-force'
                 curve.mode = 'constant-force';
-            case 'constant-height-pause'
+            case 'constant-height'
                 curve.mode = 'constant-height';
             otherwise
                 curve.mode = 'no-pause';
