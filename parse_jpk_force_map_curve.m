@@ -5,7 +5,7 @@ function curve=parse_jpk_force_map_curve(pathname,cNumber)
         folder = pathname;
         %read number of segments
         numberOfSegments = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.force-segments.count'));
-        curve.name = ['Curve ' num2str(cNumber)+1];
+        curve.name = ['Curve ' num2str(cNumber+1)];
         curve.xPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.x'));
         curve.yPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.y'));
         %if pause before measurement (pause-retract) present, remove it
@@ -27,7 +27,7 @@ function curve=parse_jpk_force_map_curve(pathname,cNumber)
             mode = '';
         end
         switch mode 
-            case 'constant-force'
+            case 'feedback-on'
                 curve.mode = 'constant-force';
             case 'constant-height'
                 curve.mode = 'constant-height';
