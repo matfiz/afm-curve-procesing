@@ -212,18 +212,6 @@ varargout{1} = handles.output;
 function cps_stiffness_panel_CloseRequestFcn(hObject, eventdata, handles)
 % the object can be deleted only from CPS window
 
-
-% --- Executes on button press in b_select_contact_point.
-function b_select_contact_point_Callback(hObject, eventdata, handles)
-% hObject    handle to b_select_contact_point (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-cps_handles = guidata(handles.cps);
-axes(cps_handles.axes_force_distance);
-vertical_cursors(hObject,cps_handles.axes_force_distance);
-guidata(hObject, handles);
-
-
 % --- Executes on button press in b_add_segment.
 function b_add_segment_Callback(hObject, eventdata, handles, segmentNumber)
 % hObject    handle to b_add_segment (see GCBO)

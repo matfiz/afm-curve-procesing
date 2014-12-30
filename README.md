@@ -7,6 +7,9 @@ Curve processing software for JPK and Multiprobe AFMs
 Changelog
 _________
 
+**2014-12-29**
+* przycisk _Select contact point_ w główynm oknie programu, pod krzywa FD
+
 **2014-03-24**
 * eksport stress relaxation domyslnie do katalogu, z ktorego otwarto krzywe
 * poprawka przy wczytywaniu wczesniej zapisanych w programie krzywych

@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 26-Mar-2014 14:45:49
+% Last Modified by GUIDE v2.5 30-Dec-2014 11:53:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -767,6 +767,7 @@ handles.b_create_line_fit = uicontrol('Parent',handles.output,...
                 'Position',[560 10 100 30],...
                 'Backgroundcolor', [0 0.4 0.4],...
                 'Callback', {@createLineFit,hObject});
+set(handles.b_contact_point,'Visible','on');            
 guidata(hObject, handles);
 
 
@@ -788,6 +789,7 @@ cursorLines = findobj(handles.axes_force_distance, 'type', 'line', 'Tag', 'curso
 for i=1:length(cursorLines)
     delete(cursorLines(i));
 end
+set(handles.b_contact_point,'Visible','off'); 
 guidata(hObject, handles);
 
           
@@ -899,6 +901,7 @@ function toggle_elasticity_panel_OnCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %handles.fileOutput = cps_write_to_file('cps',hObject);
 handles.elasticityPanel = cps_elasticity_panel('cps',hObject);
+set(handles.b_contact_point,'Visible','on');
 guidata(hObject, handles);
 
 
@@ -911,6 +914,7 @@ try
     eHandles = guidata(handles.elasticityPanel);
     delete(eHandles.fileOutputElasticity);
 end
+set(handles.b_contact_point,'Visible','off');
 delete(handles.elasticityPanel);
 guidata(hObject, handles);
 
@@ -1003,4 +1007,16 @@ while ~lengthOK
     end
 end
 handles.chi_limit = newLength;
+guidata(hObject, handles);
+
+
+% --- Executes on button press in b_contact_point.
+function b_contact_point_Callback(hObject, eventdata, handles)
+% hObject    handle to b_contact_point (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles = guidata(hObject);
+%stiffness_panel = handles.stiffnessPanel;
+axes(handles.axes_force_distance);
+vertical_cursors(handles.stiffnessPanel,handles.axes_force_distance);
 guidata(hObject, handles);
