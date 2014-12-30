@@ -9,6 +9,7 @@ _________
 
 **2014-12-29**
 * przycisk _Select contact point_ w główynm oknie programu, pod krzywa FD
+* zapisuj stiffness jako dodatnie wartosci
 
 **2014-03-24**
 * eksport stress relaxation domyslnie do katalogu, z ktorego otwarto krzywe

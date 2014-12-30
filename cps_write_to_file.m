@@ -126,7 +126,7 @@ function write_stiffness(hObject)
     end
     for i=1:curve.stiffnessParams.numberOfSegments,
         segment = curve.stiffnessParams.stiffnessSegments{i};
-        stiffness(i) = segment.slope*10^3;
+        stiffness(i) = segment.slope*10^3*(-1);
         length(i) = segment.xLength*10^9;
     end
     
