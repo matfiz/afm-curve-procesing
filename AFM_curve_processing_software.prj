@@ -1,0 +1,178 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration file="P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software\AFM_curve_processing_software.prj" location="P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software" name="AFM_curve_processing_software" preferred-package-location="P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software\AFM_curve_processing_software\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="MATLAB Compiler for Standalone Applications">
+    <param.appname>AFM_curve_processing_software</param.appname>
+    <param.icon />
+    <param.icons />
+    <param.version>1.0</param.version>
+    <param.authnamewatermark>Grzegorz Brzeiznka</param.authnamewatermark>
+    <param.email>grzegorz@brzezinka.eu</param.email>
+    <param.company>Jagiellonian University</param.company>
+    <param.summary />
+    <param.description />
+    <param.screenshot />
+    <param.guid />
+    <param.installpath.string>\Jagiellonian University\AFM_curve_processing_software\</param.installpath.string>
+    <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
+    <param.logo />
+    <param.install.notes />
+    <param.intermediate>${PROJECT_ROOT}\AFM_curve_processing_software\for_testing</param.intermediate>
+    <param.output>${PROJECT_ROOT}\AFM_curve_processing_software\for_redistribution</param.output>
+    <param.user.defined.mcr.options />
+    <param.embed.ctf>true</param.embed.ctf>
+    <param.server.ctf>${PROJECT_ROOT}\AFM_curve_processing_software\for_testing\.ctf</param.server.ctf>
+    <param.server.readme>${PROJECT_ROOT}\AFM_curve_processing_software\for_testing\readme.txt</param.server.readme>
+    <param.target.type>subtarget.standalone</param.target.type>
+    <param.support.packages />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>true</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>AFM_curve_processing_software_web</param.web.mcr.name>
+    <param.package.mcr.name>AFM_curve_processing_software_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>true</param.windows.command.prompt>
+    <param.create.log>false</param.create.log>
+    <param.log.file />
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.summary />
+      <param.description />
+      <param.screenshot />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.logo />
+      <param.install.notes />
+      <param.intermediate />
+      <param.output />
+      <param.user.defined.mcr.options />
+      <param.embed.ctf />
+      <param.server.ctf />
+      <param.server.readme />
+      <param.target.type />
+      <param.support.packages />
+      <param.web.mcr />
+      <param.no.mcr />
+      <param.no.mcr.name />
+      <param.windows.command.prompt />
+      <param.create.log />
+      <param.log.file />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\cps.m</file>
+    </fileset.main>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}\cps.fig</file>
+      <file>${PROJECT_ROOT}\cps_brush_deformation.fig</file>
+      <file>${PROJECT_ROOT}\cps_brush_deformation.m</file>
+      <file>${PROJECT_ROOT}\cps_curve_parameters.fig</file>
+      <file>${PROJECT_ROOT}\cps_curve_parameters.m</file>
+      <file>${PROJECT_ROOT}\cps_elasticity_panel.fig</file>
+      <file>${PROJECT_ROOT}\cps_elasticity_panel.m</file>
+      <file>${PROJECT_ROOT}\cps_stiffness_panel.fig</file>
+      <file>${PROJECT_ROOT}\cps_stiffness_panel.m</file>
+      <file>${PROJECT_ROOT}\cps_stress_relaxation.fig</file>
+      <file>${PROJECT_ROOT}\cps_stress_relaxation.m</file>
+      <file>${PROJECT_ROOT}\cps_write_to_file.fig</file>
+      <file>${PROJECT_ROOT}\cps_write_to_file.m</file>
+      <file>${PROJECT_ROOT}\Curve.m</file>
+      <file>${PROJECT_ROOT}\di_header_find.m</file>
+      <file>${PROJECT_ROOT}\di_header_find_by_fid.m</file>
+      <file>${PROJECT_ROOT}\di_open_fd.m</file>
+      <file>${PROJECT_ROOT}\di_read_param.m</file>
+      <file>${PROJECT_ROOT}\di_read_param_reduced.m</file>
+      <file>${PROJECT_ROOT}\di_version.m</file>
+      <file>${PROJECT_ROOT}\elasticity_cursor.m</file>
+      <file>${PROJECT_ROOT}\ElasticityParams.m</file>
+      <file>${PROJECT_ROOT}\extract_num.m</file>
+      <file>${PROJECT_ROOT}\findClosestPoint.m</file>
+      <file>${PROJECT_ROOT}\fit_creep_compliance_params.m</file>
+      <file>${PROJECT_ROOT}\fit_stress_relaxation.m</file>
+      <file>${PROJECT_ROOT}\fit_stress_relaxation_params.m</file>
+      <file>${PROJECT_ROOT}\FitFunctionFungHyperelastic.m</file>
+      <file>${PROJECT_ROOT}\FitFunctionSokolovHertzSphere.m</file>
+      <file>${PROJECT_ROOT}\FitFunctionSphereHertz.m</file>
+      <file>${PROJECT_ROOT}\FitFunctionSphereSneddon.m</file>
+      <file>${PROJECT_ROOT}\FunctionFungHyperelastic.m</file>
+      <file>${PROJECT_ROOT}\FunctionFungHyperelasticIndentation.m</file>
+      <file>${PROJECT_ROOT}\FunctionSokolovForceReduced.m</file>
+      <file>${PROJECT_ROOT}\FunctionSphereHertz.m</file>
+      <file>${PROJECT_ROOT}\FunctionSphereSneddon.m</file>
+      <file>${PROJECT_ROOT}\FunctionSphereSneddonIndentation.m</file>
+      <file>${PROJECT_ROOT}\FunctionValueInverseFungHyperelastic.m</file>
+      <file>${PROJECT_ROOT}\ginputax.m</file>
+      <file>${PROJECT_ROOT}\jpk_read_param.m</file>
+      <file>${PROJECT_ROOT}\jpk_read_segment_raw.m</file>
+      <file>${PROJECT_ROOT}\OpenFileFilter.m</file>
+      <file>${PROJECT_ROOT}\parse_curve.m</file>
+      <file>${PROJECT_ROOT}\parse_curve_jpk_ascii.m</file>
+      <file>${PROJECT_ROOT}\parse_curve_jpk_raw.m</file>
+      <file>${PROJECT_ROOT}\parse_jpk_force_map.m</file>
+      <file>${PROJECT_ROOT}\parse_jpk_force_map_curve.m</file>
+      <file>${PROJECT_ROOT}\parse_raw_curve_multi_mode.m</file>
+      <file>${PROJECT_ROOT}\plot_curve.m</file>
+      <file>${PROJECT_ROOT}\plot_distance_time_curve.m</file>
+      <file>${PROJECT_ROOT}\plot_force_time_curve.m</file>
+      <file>${PROJECT_ROOT}\plot_time_curve.m</file>
+      <file>${PROJECT_ROOT}\read_to_gui.m</file>
+      <file>${PROJECT_ROOT}\StiffnessParams.m</file>
+      <file>${PROJECT_ROOT}\StiffnessSegment.m</file>
+      <file>${PROJECT_ROOT}\vertical_cursors.m</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}\AFM_curve_processing_software\for_testing" name="splash.png" optional="false">P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software\AFM_curve_processing_software\for_testing\splash.png</file>
+      <file location="${PROJECT_ROOT}\AFM_curve_processing_software\for_testing" name="readme.txt" optional="true">P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software\AFM_curve_processing_software\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\AFM_curve_processing_software\for_testing" name="AFM_curve_processing_software.exe" optional="false">P:\Grzegorz\Dokumenty\doktoranckie\afm-curve-processing-software\AFM_curve_processing_software\for_testing\AFM_curve_processing_software.exe</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2014a</root>
+      <toolboxes>
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="matlabcoder" />
+      </toolboxes>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>6.2</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

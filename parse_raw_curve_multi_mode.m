@@ -50,7 +50,8 @@ try
         ramp_z_sweep = di_read_param_reduced(fid,'\@4:Ramp size Zsweep');
         z_scale = di_read_param_reduced(fid,'\@4:Z scale');
         z_sens = di_read_param(fid,'\@Sens. Zsens');
-        curve.scalingFactor =  z_sens*curve.springConstant*z_scale*ramp_z_sweep*10^(-4);
+        %curve.scalingFactor =  z_sens*curve.springConstant*z_scale*ramp_z_sweep*10^(-4);
+        curve.scalingFactor =  curve.springConstant;
         %extendTime
         curve.extendTime =  1;
         %retractTime

@@ -1,0 +1,89 @@
+Digital Instrument's Nanoscope 4.3x and later file format description
+Information about version 2 headers can be found here.
+Information on V3.x and V4.2 and earlier headers can be found here.
+The V4.3x and later header
+This new version made a lot of changes to the header.  It is confusing at first, but here is a description.  Much of this info was derived from an email (and in some cases copied) from DI tech support guru Sean Clayton.
+The first thing you will notice is the scaling sections start with '\*Ciao'.  This stands for 'Control Input and Output'.  Some of the parameters in a \*Ciao list start with '\@' instead of simply '\'.  After the @ there may be a number followed by a colon.  The number is called the 'group number'.  Right after the label and colon, there will be one of the characters 'V', 'C' or 'S'.
+
+V means Value - a parameter that contains a double and a unit of  measure, and some scaling definitions.  
+C means Scale - a parameter that is simply a scaled version of another.  
+S means Select - a parameter that describes some selection that has been made.
+
+The value parameters have the following format. [soft-scale] (hard-scale) hard-value
+
+For example \@1:Z limit: V [Sens. Zscan] (0.006713867 V/LSB) 55.00000 V
+Since the Nanoscope is a digital device, all data is inherently a number. We call this number in its rawest form an LSB (a bit of a misnomer - it comes seeing scaling values on ADCs and DACs as Volts per Least-Significant-Bit). Anyhow, our LSB is the digital representation of volts or frequency.
+
+The hard-value is the analog representation of a measurement. This sounds complicated, but it is simply the value you read on the parameter panel when you set the Units: to Volts. The hard-value is the value you would read with a voltmeter inside the guts of the Nanoscope electronics or inside the head. This value is always in volts with the exception of the Drive Frequency which is in Hertz and some STM parameters that are in Amps.
+
+The hard-scale is the conversion factor we use to convert LSBs into hard-values. We use the prefix "hard-" in hard-scale and hard-value because these numbers are typically defined by the hardware itself and are not changeable by the user.
+
+We also have a terms prefixed by "soft-". These are soft-scale and soft-value. A soft-value is what the user sees on the screen when the Units: are set to Metric. The soft-scale is what we use to convert a hard-value into a soft-value. Soft-scales are user defined, or are calibration numbers that the user divines. Soft-scales in the parameters are typically not written out - rather, another tag appears between the brackets, like [Sens. Zscan]. In that case, you look elsewhere in the list for tag and use that parameter's hard-value for the soft-scale.
+
+A value (V) parameter might be missing a soft-scale or a hard-scale, but must *always* have a hard-value.
+
+The scale (C) parameters have the following format.
+[soft-scale] hard-value 
+The hard-value is almost always a scalar value. 
+The soft-scale always points to another parameter - this parameter is the target of the scaling action.
+This is most often used for the Z magnify parameter to allow the user to change the scaling of Z scale offline without actually affecting the real data in the file.
+The select (S) parameters have the following format. [internal-designation for selection] "external-designation for selection"
+An internal-designation does not have to be provided.
+
+Lets take a closer look with an example.  The following is part of a V4 header, with only the relevent stuff shown for clarity. 
+
+\*File list
+\Version: 0x04310006
+\Date: 06:42:39 PM Thu Jul 02 1998
+\Data length: 20480
+\*Equipment list
+\Description: Extended D3100
+\Controller: IIIA
+\Scanner file: xxxg.scn
+\*Scanner list
+\Scanner type: Dimension
+\Serial number: xxxG
+\Piezo size: G
+\@Sens. Zscan: V 11.86629 nm/V
+\*Ciao scan list
+\Scan size: 500 nm
+\Samps/line: 512
+\Lines: 512
+\Scan rate: 5.08626
+\@InterleaveList: S [InterleaveOffMode] "Disabled"
+\@MicroscopeList: S [TMMode] "Tapping"
+\@2:SPMFeedbackList: S [SPMFb] "Amplitude"
+\@3:SPMFeedbackList: S [SPMFb] "Amplitude" linked
+\@Sens. Deflection: V 63.11920 nm/V
+\@1:Z limit: V [Sens. Zscan] (0.006713867 V/LSB) 55.00000 V
+\*Ciao image list
+\Data offset: 544768
+\Data length: 524288
+\Samps/line: 512
+\Number of lines: 512
+\@2:Image Data: S [Height] "Height"
+\@Z magnify: C [2:Z scale] 0.1448305
+\@2:Z scale: V [Sens. Zscan] (0.0008392334 V/LSB) 0.4364014 V
+\*File list end
+First, notice that \*Microscope list and \*Controller list from V3 has been replaced with \*Equipment list and \*Scanner list.  All the parameters from the V3 controller list are now in (hard-scale) values in the parameter of interest.
+
+Let's find the Z scale conversion factors.  From the line: 
+\@2:Z scale: V [Sens. Zscan] (0.0008392334 V/LSB) 0.4364014 V
+we can get the (hard-scale) of (0.0008392334 V/LSB).  The [soft-scale] value is found by looking the tag in brackets.  Remember, the soft-scale always points to another parameter   [Sens. Zscan] is located in the \*Scanner list, where you find \@Sens. Zscan: V 11.86629 nm/V.  The [soft-scale value is then 11.86629 nm/V.
+
+There are two formulas that explain everything you need to know about the data:
+
+LSBs * hard-scale = hard-value
+hard-value * soft-scale = soft-value
+For example, to convert a raw data value to height, multiply the data value (LSB) * hard-scale * soft-scale.  Say the raw data value was 2463.  The height is 2463 LSB * 0.0008392334 V/LSB * 11.86629 nm/V = 24.53 nm
+
+The range of the data is simply the hard-value * soft-scale, or 0.4364014 V * 11.86629 nm/V = 5.178 nm
+
+For questions, comments, corrections, etc, about any of the technical documents here, please mail them to: rworkman@u.arizona.edu
+
+Contact info:
+Srin Manne
+Physics Dept
+PAS 575
+520-626-5305
+smanne@physics.arizona.edu

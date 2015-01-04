@@ -7,6 +7,9 @@ Curve processing software for JPK and Multiprobe AFMs
 Changelog
 _________
 
+**2014-01-04**
+* naprawa fatalnego błędu przy skalowaniu Z piezo przy imporcie danych z DI (3 nieprzespane noce)
+
 **2014-12-29**
 * przycisk _Select contact point_ w główynm oknie programu, pod krzywa FD
 * zapisuj stiffness jako dodatnie wartosci

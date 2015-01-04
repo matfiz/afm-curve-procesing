@@ -1,0 +1,10 @@
+\@1:Z limit: V [Sens. Zscan] (0.006713867 V/LSB) 55.00000 V
+ [soft-scale] (hard-scale) hard-value
+ 
+ hard-scale = hard-value/2^{number-of-bits}
+ eg. number-of-bits=16 -> 2^16:
+ hard-scale = hard-value/65536
+
+V means Value - a parameter that contains a double and a unit of  measure, and some scaling definitions.  
+C means Scale - a parameter that is simply a scaled version of another.  
+S means Select - a parameter that describes some selection that has been made.
