@@ -58,7 +58,8 @@ Z_scale = extract_num(line);
 %convert deflection to Newtons
 scaling = Z_scale*defl_sens*spring_const;
 %convert Z sens to nanometers
-hscale = senszscan*ramp*2^16/spl;
+%hscale = senszscan*ramp*2^16/spl;%original
+hscale = senszscan*0.006713867*2^16/spl;
 
 %get deflection data
 % Go to 1st pixel data and start reading
@@ -77,7 +78,7 @@ C = senszsensorsens*Z_scale*fread(fid,[1 8192] ,'int16');
 %Split extend/retract data and convert to nm  
 va = A(1:spl);%approach
 vr = A( (spl+1) : (2*spl) );%retract
-%B = hscale*[1:spl]; 
+B = hscale*[1:spl]; 
 
 %I reduce no o points because of the noise at the end
 reduced_spl = ceil(0.8*spl);
@@ -90,6 +91,6 @@ reduced_spl = ceil(0.8*spl);
 %disp(spl)
 
 %Output = [-B(1:reduced_spl)' -B(reduced_spl:-1:1)' va(1:reduced_spl)' vr(reduced_spl:-1:1)'];
-%Output = [B(reduced_spl:-1:1)' B(1:reduced_spl)' va(reduced_spl:-1:1)' vr(1:reduced_spl)' C(1:reduced_spl)'];
-Output = [-C(reduced_spl:-1:1)' -C(1:reduced_spl)' va(reduced_spl:-1:1)' vr(1:reduced_spl)'];
+Output = [B(reduced_spl:-1:1)' B(1:reduced_spl)' va(reduced_spl:-1:1)' vr(1:reduced_spl)' C(1:reduced_spl)'];
+%Output = [-C(reduced_spl:-1:1)' -C(1:reduced_spl)' va(reduced_spl:-1:1)' vr(1:reduced_spl)'];
 end

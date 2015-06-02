@@ -33,9 +33,31 @@ function plot_curve(hObject,handles)
             end
             %pcol(4)='g';
         case 2   % view approach
+             if curve.pauseLength > 0
+                set(handles.axes_force_distance,'Visible','On');
+                fd_plot = plot(handles.axes_force_distance,...
+                    approach(1,:),approach(2,:),...
+                    pause(1,:),pause(2,:));
+            else
+                set(handles.axes_force_distance,'Visible','On');
+                fd_plot = plot(handles.axes_force_distance,...
+                    approach(1,:),approach(2,:));
+            end
+            pcol(1)='r';
+            
+            if curve.pauseLength == 0
+                legend_fd_text = {'approach'};
+            else    
+                legend_fd_text = {'approach', 'pause'};
+                pcol(2)='k';
+            end
 
         case 3   % view retract 
-
+            set(handles.axes_force_distance,'Visible','On');
+            fd_plot = plot(handles.axes_force_distance,...
+                      retract(1,:),retract(2,:));
+            pcol(1)='b';
+            legend_fd_text = {'retract'};
     end
    
     %fd_plot = plot(handles.axes_force_distance,x_distance_data,y_distance_data);

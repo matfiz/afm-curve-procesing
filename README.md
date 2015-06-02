@@ -6,6 +6,8 @@ Curve processing software for JPK and Multiprobe AFMs
 
 Changelog
 _________
+**2015-06-02**
+* dodanie wyboru widoku całej krzywej (approach+retract), tylko approach lub tylko retract w głównym oknie programu
 
 **2014-01-04**
 * naprawa fatalnego błędu przy skalowaniu Z piezo przy imporcie danych z DI (3 nieprzespane noce)

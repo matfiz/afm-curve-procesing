@@ -22,7 +22,7 @@ function varargout = cps(varargin)
 
 % Edit the above text to modify the response to help cps
 
-% Last Modified by GUIDE v2.5 30-Dec-2014 11:53:15
+% Last Modified by GUIDE v2.5 02-Jun-2015 04:50:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1020,3 +1020,38 @@ handles = guidata(hObject);
 axes(handles.axes_force_distance);
 vertical_cursors(handles.stiffnessPanel,handles.axes_force_distance);
 guidata(hObject, handles);
+
+
+% --- Executes on selection change in curve_view.
+function curve_view_Callback(hObject, eventdata, handles)
+% hObject    handle to curve_view (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns curve_view contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from curve_view
+contents = cellstr(get(hObject,'String'));
+current_selection = contents{get(hObject,'Value')};
+switch current_selection
+    case 'approach+retract'
+        handles.view_mode = 1;
+    case 'approach'
+        handles.view_mode = 2;
+    case 'retract'
+        handles.view_mode = 3;
+end
+plot_curve(hObject,handles);
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function curve_view_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to curve_view (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
