@@ -624,8 +624,10 @@ function fitModel(hObject)
           aData = FunctionSphereSneddonIndentation(radius, data_full(1,:));
           yFit=FunctionSphereSneddon([radius nu], [El], aData);
         case 'hertz_sphere'
-          El=FitFunctionSphereHertz([radius nu], xData, yData);
-          yFit=FunctionSphereHertz([radius nu], [El], data_full(1,:));
+          param=FitFunctionSphereHertz([radius nu], xData, yData);
+          El=param(1);
+          elasticityParams.y0 = param(2);
+          yFit=FunctionSphereHertz([radius nu], [El elasticityParams.y0], data_full(1,:));
         case 'fung_hyperelastic'
           param=FitFunctionFungHyperelastic([radius nu], xData, yData);
           aData = FunctionFungHyperelasticIndentation(radius, data_full(1,:));
