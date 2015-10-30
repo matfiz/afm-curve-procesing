@@ -22,6 +22,7 @@ classdef Curve
         name
         xPos
         yPos
+        positionIndex
         mode
         closedLoop
         sensitivity

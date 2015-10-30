@@ -20,9 +20,12 @@ function curve=parse_curve_jpk_raw(hObject,pathname,fname)
             end
         end
             
-        curve.name = fname;
+        
         curve.xPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.x'));
         curve.yPos = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position.y'));
+        positionIndex = str2num(jpk_read_param(fullfile(folder, 'header.properties'),'force-scan-series.header.position-index'));
+        curve.positionIndex = positionIndex;
+        curve.name = strcat(fname, ' (position: ',num2str(curve.positionIndex),')');
         %read mode of 2nd segment (pause)
         mode = jpk_read_param(fullfile(folder, 'segments','1','segment-header.properties'),'force-segment-header.settings.segment-settings.type');
         switch mode 
