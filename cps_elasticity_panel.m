@@ -620,9 +620,11 @@ function fitModel(hObject)
     nu = 0.5; %poisson ratio;
     switch model 
         case 'sneddon_sphere'
-          El=FitFunctionSphereSneddon([radius nu], xData, yData);
+          param=FitFunctionSphereSneddon([radius nu], xData, yData);
+          El=param(1);
+          elasticityParams.y0 = param(2);
           aData = FunctionSphereSneddonIndentation(radius, data_full(1,:));
-          yFit=FunctionSphereSneddon([radius nu], [El], aData);
+          yFit=FunctionSphereSneddon([radius nu], [El elasticityParams.y0], aData);
         case 'hertz_sphere'
           param=FitFunctionSphereHertz([radius nu], xData, yData);
           El=param(1);

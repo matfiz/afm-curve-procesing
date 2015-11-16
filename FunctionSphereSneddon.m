@@ -3,16 +3,17 @@ function force=FunctionSphereSneddon(c, p, a)% Implicit function: sphere in Sned
 % assign the parameters ...
 
 El=p(1);%elasticity parameter
+y0=p(2);%offset
 
 R=c(1); %radius
 nu=c(2); %poisson ratio
 
 
-force=zeros(size(a)); % define a vector to allocate the magnetization values
+force=zeros(size(a)); % define a vector to allocate the force values
 NN=length(a); % total length of the field vector x, i.e. B
 %a = FunctionSphereSneddonIndentation(R, abs(delta) );
 for i=1:NN    
-   force(i)= El/(1-nu.^2) * (0.5*(R.^2 + a(i).^2 ) * log((R+a(i))/(R-a(i)))- a(i)*R);
+   force(i)= El/(1-nu.^2) * (0.5*(R.^2 + a(i).^2 ) * log((R+a(i))/(R-a(i)))- a(i)*R)+y0;
 end
 
 end % close the function

@@ -6,6 +6,13 @@ Curve processing software for JPK and Multiprobe AFMs
 
 Changelog
 _________
+
+**2015-11-16**
+* dopasowanie wyrazu wolnego (y0) przy dopasowaniu modelu Sneddona
+
+**2015-10-30**
+* wyświetlanie numeru pozycji tipa na liście krzywych, jeśli zdefiniowana (dla plików JPK)
+
 **2015-06-02**
 * dodanie wyboru widoku całej krzywej (approach+retract), tylko approach lub tylko retract w głównym oknie programu
 * dopasowanie wyrazu wolnego (y0) przy dopasowaniu modelu Hertza
