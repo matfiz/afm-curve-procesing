@@ -620,7 +620,9 @@ function fitModel(hObject)
     nu = 0.5; %poisson ratio;
     switch model 
         case 'sneddon_sphere'
+          wait = waitbar(0.75,'Fitting...');  
           param=FitFunctionSphereSneddon([radius nu], xData, yData);
+          close(wait); 
           El=param(1);
           elasticityParams.y0 = param(2);
           aData = FunctionSphereSneddonIndentation(radius, data_full(1,:));
