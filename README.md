@@ -6,6 +6,8 @@ Curve processing software for JPK and Multiprobe AFMs
 
 Changelog
 _________
+**2015-11-30**
+* poprawa buga przy eksporcie krzywej do xls (całej i widocznej części) z widoku dopasowania elastyczności
 
 **2015-11-16**
 * dopasowanie wyrazu wolnego (y0) przy dopasowaniu modelu Sneddona

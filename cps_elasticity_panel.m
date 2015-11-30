@@ -688,9 +688,9 @@ El = elasticityParams.E;
 switch elasticityParams.model
     case 'sneddon_sphere'
         aData = FunctionSphereSneddonIndentation(radius, forceIndentationData(1,:));
-        yFit=FunctionSphereSneddon([radius nu], [El], aData);
+        yFit=FunctionSphereSneddon([radius nu], [El elasticityParams.y0], aData);
     case 'hertz_sphere'
-        yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+        yFit=FunctionSphereHertz([radius nu], [El elasticityParams.y0], forceIndentationData(1,:));
     case 'sokolov_sphere'
         yFit=FunctionSokolovForceReduced([El elasticityParams.Z0], [radius nu curve.scalingFactor], forceIndentationData(1,:));
     case 'fung_hyperelastic'
@@ -743,9 +743,9 @@ El = elasticityParams.E;
 switch elasticityParams.model
     case 'sneddon_sphere'
         aData = FunctionSphereSneddonIndentation(radius, forceIndentationData(1,:));
-        yFit=FunctionSphereSneddon([radius nu], [El], aData);
+        yFit=FunctionSphereSneddon([radius nu], [El elasticityParams.y0], aData);
     case 'hertz_sphere'
-        yFit=FunctionSphereHertz([radius nu], [El], forceIndentationData(1,:));
+        yFit=FunctionSphereHertz([radius nu], [El elasticityParams.y0], forceIndentationData(1,:));
     case 'fung_hyperelastic'
         aData = FunctionFungHyperelasticIndentation(radius, forceIndentationData(1,:));
         yFit=FunctionFungHyperelastic([radius nu], [El, elasticityParams.b, elasticityParams.y0], aData);
